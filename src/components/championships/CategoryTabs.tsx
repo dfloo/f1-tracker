@@ -17,11 +17,7 @@ export default function CategoryTabs({
   disabled = false,
 }: CategoryTabsProps) {
   return (
-    <div
-      role="tablist"
-      aria-label="Championship category"
-      className="bg-surface-hover inline-flex rounded-lg p-1"
-    >
+    <div className="bg-surface-hover inline-flex rounded-lg p-1">
       {tabItems.map((item) => {
         const isActive = selectedCategory === item.id;
 
@@ -29,10 +25,7 @@ export default function CategoryTabs({
           <button
             key={item.id}
             type="button"
-            role="tab"
-            aria-selected={isActive}
-            aria-controls={`panel-${item.id}`}
-            id={`tab-${item.id}`}
+            aria-pressed={isActive}
             disabled={disabled}
             onClick={() => onChange(item.id)}
             className={[
