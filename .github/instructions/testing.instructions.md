@@ -1,7 +1,7 @@
 ---
-name: "Testing Conventions"
-description: "Use when creating or modifying unit tests, integration tests, route handler tests, API tests, or React component tests with Vitest and Testing Library."
-applyTo: "**/*.spec.{ts,tsx}"
+name: 'Testing Conventions'
+description: 'Use when creating or modifying unit tests, integration tests, route handler tests, API tests, or React component tests with Vitest and Testing Library.'
+applyTo: '**/*.spec.{ts,tsx}'
 ---
 
 # Testing Conventions
