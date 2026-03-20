@@ -135,7 +135,15 @@ describe('ChampionshipsExplorer', () => {
       await screen.findByText(/chart for 2024 drivers: max verstappen/i),
     ).toBeInTheDocument();
 
-    await user.click(screen.getByRole('tab', { name: /constructors/i }));
+    const constructorsToggle = screen.getByRole('button', {
+      name: /constructors/i,
+    });
+
+    expect(constructorsToggle).toHaveAttribute('aria-pressed', 'false');
+
+    await user.click(constructorsToggle);
+
+    expect(constructorsToggle).toHaveAttribute('aria-pressed', 'true');
 
     expect(
       await screen.findByText(/chart for 2024 constructors: red bull/i),
