@@ -119,7 +119,7 @@ describe('NavBar', () => {
       screen.getByRole('dialog', { name: /theme settings/i }),
     ).toBeVisible();
 
-    await user.click(screen.getByRole('radio', { name: /dark mode/i }));
+    await user.click(screen.getByRole('button', { name: /dark mode/i }));
 
     expect(mockSetTheme).toHaveBeenCalledWith('dark');
     expect(
@@ -142,18 +142,17 @@ describe('NavBar', () => {
       screen.getByRole('dialog', { name: /theme settings/i }),
     ).toBeVisible();
 
-    expect(screen.getByRole('radio', { name: /light mode/i })).toHaveAttribute(
+    expect(screen.getByRole('button', { name: /light mode/i })).toHaveAttribute(
       'title',
       'Light',
     );
-    expect(screen.getByRole('radio', { name: /dark mode/i })).toHaveAttribute(
+    expect(screen.getByRole('button', { name: /dark mode/i })).toHaveAttribute(
       'title',
       'Dark',
     );
-    expect(screen.getByRole('radio', { name: /system mode/i })).toHaveAttribute(
-      'title',
-      'System',
-    );
+    expect(
+      screen.getByRole('button', { name: /system mode/i }),
+    ).toHaveAttribute('title', 'System');
 
     await user.keyboard('{Escape}');
 

@@ -123,16 +123,14 @@ export default function NavBar() {
                 className="bg-surface border-border absolute right-0 mt-2 rounded-md border p-2 shadow-lg"
               >
                 <div
-                  role="radiogroup"
                   aria-label="Theme mode"
                   className="bg-surface-hover flex items-center gap-1 rounded-md p-1"
                 >
                   <button
                     type="button"
-                    role="radio"
                     title="Light"
                     aria-label="Light mode"
-                    aria-checked={selectedTheme === 'light'}
+                    aria-pressed={selectedTheme === 'light'}
                     onClick={() => handleThemeChange('light')}
                     className={[
                       'rounded p-2 transition-colors',
@@ -145,10 +143,9 @@ export default function NavBar() {
                   </button>
                   <button
                     type="button"
-                    role="radio"
                     title="Dark"
                     aria-label="Dark mode"
-                    aria-checked={selectedTheme === 'dark'}
+                    aria-pressed={selectedTheme === 'dark'}
                     onClick={() => handleThemeChange('dark')}
                     className={[
                       'rounded p-2 transition-colors',
@@ -161,10 +158,9 @@ export default function NavBar() {
                   </button>
                   <button
                     type="button"
-                    role="radio"
                     title="System"
                     aria-label="System mode"
-                    aria-checked={selectedTheme === 'system'}
+                    aria-pressed={selectedTheme === 'system'}
                     onClick={() => handleThemeChange('system')}
                     className={[
                       'rounded p-2 transition-colors',

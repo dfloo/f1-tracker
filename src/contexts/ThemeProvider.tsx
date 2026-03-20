@@ -11,12 +11,12 @@ export default function ThemeProvider({
 }: ThemeProviderProps) {
   return (
     <NextThemesProvider
+      {...props}
       attribute="class"
       defaultTheme="system"
       enableSystem
       storageKey="f1-tracker-theme"
       disableTransitionOnChange
-      {...props}
     >
       {children}
     </NextThemesProvider>
