@@ -115,13 +115,15 @@ describe('NavBar', () => {
     });
     await user.click(menuTrigger);
 
-    expect(screen.getByRole('menu', { name: /theme settings/i })).toBeVisible();
+    expect(
+      screen.getByRole('dialog', { name: /theme settings/i }),
+    ).toBeVisible();
 
-    await user.click(screen.getByRole('menuitemradio', { name: 'Dark' }));
+    await user.click(screen.getByRole('radio', { name: /dark mode/i }));
 
     expect(mockSetTheme).toHaveBeenCalledWith('dark');
     expect(
-      screen.queryByRole('menu', { name: /theme settings/i }),
+      screen.queryByRole('dialog', { name: /theme settings/i }),
     ).not.toBeInTheDocument();
   });
 
@@ -136,12 +138,27 @@ describe('NavBar', () => {
       }),
     );
 
-    expect(screen.getByRole('menu', { name: /theme settings/i })).toBeVisible();
+    expect(
+      screen.getByRole('dialog', { name: /theme settings/i }),
+    ).toBeVisible();
+
+    expect(screen.getByRole('radio', { name: /light mode/i })).toHaveAttribute(
+      'title',
+      'Light',
+    );
+    expect(screen.getByRole('radio', { name: /dark mode/i })).toHaveAttribute(
+      'title',
+      'Dark',
+    );
+    expect(screen.getByRole('radio', { name: /system mode/i })).toHaveAttribute(
+      'title',
+      'System',
+    );
 
     await user.keyboard('{Escape}');
 
     expect(
-      screen.queryByRole('menu', { name: /theme settings/i }),
+      screen.queryByRole('dialog', { name: /theme settings/i }),
     ).not.toBeInTheDocument();
   });
 });

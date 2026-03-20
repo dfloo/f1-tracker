@@ -1,6 +1,6 @@
 'use client';
 
-import { Check, Settings } from 'lucide-react';
+import { Monitor, Moon, Settings, Sun } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useTheme } from 'next-themes';
@@ -119,46 +119,64 @@ export default function NavBar() {
 
             {isMenuOpen ? (
               <div
-                role="menu"
+                role="dialog"
                 aria-label="Theme settings"
-                className="bg-surface border-border absolute right-0 mt-2 w-44 rounded-md border p-1 shadow-lg"
+                className="bg-surface border-border absolute right-0 mt-2 rounded-md border p-2 shadow-lg"
               >
-                <button
-                  type="button"
-                  role="menuitemradio"
-                  aria-checked={selectedTheme === 'light'}
-                  onClick={() => handleThemeChange('light')}
-                  className="hover:bg-surface-hover text-foreground flex w-full items-center justify-between rounded px-3 py-2 text-sm"
+                <div
+                  role="radiogroup"
+                  aria-label="Theme mode"
+                  className="bg-surface-hover flex items-center gap-1 rounded-md p-1"
                 >
-                  Light
-                  {selectedTheme === 'light' ? (
-                    <Check size={14} aria-hidden="true" />
-                  ) : null}
-                </button>
-                <button
-                  type="button"
-                  role="menuitemradio"
-                  aria-checked={selectedTheme === 'dark'}
-                  onClick={() => handleThemeChange('dark')}
-                  className="hover:bg-surface-hover text-foreground flex w-full items-center justify-between rounded px-3 py-2 text-sm"
-                >
-                  Dark
-                  {selectedTheme === 'dark' ? (
-                    <Check size={14} aria-hidden="true" />
-                  ) : null}
-                </button>
-                <button
-                  type="button"
-                  role="menuitemradio"
-                  aria-checked={selectedTheme === 'system'}
-                  onClick={() => handleThemeChange('system')}
-                  className="hover:bg-surface-hover text-foreground flex w-full items-center justify-between rounded px-3 py-2 text-sm"
-                >
-                  Follow system
-                  {selectedTheme === 'system' ? (
-                    <Check size={14} aria-hidden="true" />
-                  ) : null}
-                </button>
+                  <button
+                    type="button"
+                    role="radio"
+                    title="Light"
+                    aria-label="Light mode"
+                    aria-checked={selectedTheme === 'light'}
+                    onClick={() => handleThemeChange('light')}
+                    className={[
+                      'rounded p-2 transition-colors',
+                      selectedTheme === 'light'
+                        ? 'bg-surface text-foreground'
+                        : 'text-muted hover:bg-surface hover:text-foreground',
+                    ].join(' ')}
+                  >
+                    <Sun size={16} aria-hidden="true" />
+                  </button>
+                  <button
+                    type="button"
+                    role="radio"
+                    title="Dark"
+                    aria-label="Dark mode"
+                    aria-checked={selectedTheme === 'dark'}
+                    onClick={() => handleThemeChange('dark')}
+                    className={[
+                      'rounded p-2 transition-colors',
+                      selectedTheme === 'dark'
+                        ? 'bg-surface text-foreground'
+                        : 'text-muted hover:bg-surface hover:text-foreground',
+                    ].join(' ')}
+                  >
+                    <Moon size={16} aria-hidden="true" />
+                  </button>
+                  <button
+                    type="button"
+                    role="radio"
+                    title="System"
+                    aria-label="System mode"
+                    aria-checked={selectedTheme === 'system'}
+                    onClick={() => handleThemeChange('system')}
+                    className={[
+                      'rounded p-2 transition-colors',
+                      selectedTheme === 'system'
+                        ? 'bg-surface text-foreground'
+                        : 'text-muted hover:bg-surface hover:text-foreground',
+                    ].join(' ')}
+                  >
+                    <Monitor size={16} aria-hidden="true" />
+                  </button>
+                </div>
               </div>
             ) : null}
           </div>
