@@ -92,7 +92,7 @@ export default function ChampionshipsExplorer() {
   }, [selectedYear]);
 
   return (
-    <div className="space-y-6">
+    <div className="flex h-full flex-col gap-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <YearSelect
           years={availableYears}
@@ -108,7 +108,7 @@ export default function ChampionshipsExplorer() {
       </div>
 
       {isLoading ? (
-        <div className="border-border bg-surface text-muted flex items-center justify-center rounded-xl border py-24 text-sm">
+        <div className="border-border bg-surface text-muted flex flex-1 items-center justify-center rounded-xl border py-24 text-sm">
           Loading championship chart...
         </div>
       ) : null}
