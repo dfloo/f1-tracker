@@ -1,12 +1,19 @@
 import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import NavBar from './NavBar';
 
 const mockUsePathname = vi.fn();
+const mockUseTheme = vi.fn();
+const mockSetTheme = vi.fn();
 
 vi.mock('next/navigation', () => ({
   usePathname: () => mockUsePathname(),
+}));
+
+vi.mock('next-themes', () => ({
+  useTheme: () => mockUseTheme(),
 }));
 
 vi.mock('next/link', () => ({
@@ -27,7 +34,14 @@ vi.mock('next/link', () => ({
 describe('NavBar', () => {
   beforeEach(() => {
     mockUsePathname.mockReset();
+    mockUseTheme.mockReset();
+    mockSetTheme.mockReset();
+
     mockUsePathname.mockReturnValue('/');
+    mockUseTheme.mockReturnValue({
+      theme: 'system',
+      setTheme: mockSetTheme,
+    });
   });
 
   it('renders the brand link and all navigation links', () => {
@@ -89,5 +103,45 @@ describe('NavBar', () => {
     });
     expect(activeLink).toHaveClass('text-foreground');
     expect(inactiveLink).toHaveClass('text-muted');
+  });
+
+  it('opens the settings menu and changes the theme', async () => {
+    const user = userEvent.setup();
+
+    render(<NavBar />);
+
+    const menuTrigger = screen.getByRole('button', {
+      name: /open settings menu/i,
+    });
+    await user.click(menuTrigger);
+
+    expect(screen.getByRole('menu', { name: /theme settings/i })).toBeVisible();
+
+    await user.click(screen.getByRole('menuitemradio', { name: 'Dark' }));
+
+    expect(mockSetTheme).toHaveBeenCalledWith('dark');
+    expect(
+      screen.queryByRole('menu', { name: /theme settings/i }),
+    ).not.toBeInTheDocument();
+  });
+
+  it('closes the settings menu when Escape is pressed', async () => {
+    const user = userEvent.setup();
+
+    render(<NavBar />);
+
+    await user.click(
+      screen.getByRole('button', {
+        name: /open settings menu/i,
+      }),
+    );
+
+    expect(screen.getByRole('menu', { name: /theme settings/i })).toBeVisible();
+
+    await user.keyboard('{Escape}');
+
+    expect(
+      screen.queryByRole('menu', { name: /theme settings/i }),
+    ).not.toBeInTheDocument();
   });
 });
