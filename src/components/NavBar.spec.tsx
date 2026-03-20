@@ -105,7 +105,7 @@ describe('NavBar', () => {
     expect(inactiveLink).toHaveClass('text-muted');
   });
 
-  it('opens the settings menu and changes the theme', async () => {
+  it('keeps the settings menu open after changing the theme', async () => {
     const user = userEvent.setup();
 
     render(<NavBar />);
@@ -123,8 +123,8 @@ describe('NavBar', () => {
 
     expect(mockSetTheme).toHaveBeenCalledWith('dark');
     expect(
-      screen.queryByRole('dialog', { name: /theme settings/i }),
-    ).not.toBeInTheDocument();
+      screen.getByRole('dialog', { name: /theme settings/i }),
+    ).toBeVisible();
   });
 
   it('closes the settings menu when Escape is pressed', async () => {

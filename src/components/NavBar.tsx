@@ -59,7 +59,6 @@ export default function NavBar() {
 
   function handleThemeChange(nextTheme: 'light' | 'dark' | 'system') {
     setTheme(nextTheme);
-    setIsMenuOpen(false);
   }
 
   return (
