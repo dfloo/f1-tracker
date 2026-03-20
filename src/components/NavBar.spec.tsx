@@ -1,15 +1,15 @@
-import { render, screen } from "@testing-library/react";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { render, screen } from '@testing-library/react';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import NavBar from "./NavBar";
+import NavBar from './NavBar';
 
 const mockUsePathname = vi.fn();
 
-vi.mock("next/navigation", () => ({
+vi.mock('next/navigation', () => ({
   usePathname: () => mockUsePathname(),
 }));
 
-vi.mock("next/link", () => ({
+vi.mock('next/link', () => ({
   default: ({
     href,
     children,
@@ -24,69 +24,70 @@ vi.mock("next/link", () => ({
   ),
 }));
 
-describe("NavBar", () => {
+describe('NavBar', () => {
   beforeEach(() => {
     mockUsePathname.mockReset();
-    mockUsePathname.mockReturnValue("/");
+    mockUsePathname.mockReturnValue('/');
   });
 
-  it("renders the brand link and all navigation links", () => {
+  it('renders the brand link and all navigation links', () => {
     render(<NavBar />);
 
     expect(
-      screen.getByRole("link", {
+      screen.getByRole('link', {
         name: /f1 tracker/i,
       }),
-    ).toHaveAttribute("href", "/");
+    ).toHaveAttribute('href', '/');
 
-    expect(screen.getByRole("link", { name: "Drivers" })).toHaveAttribute(
-      "href",
-      "/drivers",
+    expect(screen.getByRole('link', { name: 'Drivers' })).toHaveAttribute(
+      'href',
+      '/drivers',
     );
-    expect(screen.getByRole("link", { name: "Teams" })).toHaveAttribute(
-      "href",
-      "/teams",
+    expect(screen.getByRole('link', { name: 'Teams' })).toHaveAttribute(
+      'href',
+      '/teams',
     );
-    expect(screen.getByRole("link", { name: "Races" })).toHaveAttribute(
-      "href",
-      "/races",
+    expect(screen.getByRole('link', { name: 'Races' })).toHaveAttribute(
+      'href',
+      '/races',
     );
-    expect(
-      screen.getByRole("link", { name: "Championships" }),
-    ).toHaveAttribute("href", "/championships");
+    expect(screen.getByRole('link', { name: 'Championships' })).toHaveAttribute(
+      'href',
+      '/championships',
+    );
   });
 
-  it("marks a link as active when pathname matches exactly", () => {
-    mockUsePathname.mockReturnValue("/teams");
+  it('marks a link as active when pathname matches exactly', () => {
+    mockUsePathname.mockReturnValue('/teams');
 
     render(<NavBar />);
 
-    const activeLink = screen.getByRole("link", { name: "Teams" });
-    const inactiveLink = screen.getByRole("link", { name: "Drivers" });
+    const activeLink = screen.getByRole('link', { name: 'Teams' });
+    const inactiveLink = screen.getByRole('link', { name: 'Drivers' });
 
     expect(activeLink).toHaveStyle({
-      color: "var(--f1-red)",
+      color: 'var(--f1-red)',
     });
-    expect(activeLink).toHaveClass("text-foreground");
+    expect(activeLink).toHaveClass('text-foreground');
 
-    expect(inactiveLink).toHaveClass("text-muted");
+    expect(inactiveLink).toHaveClass('text-muted');
     expect(inactiveLink).not.toHaveStyle({
-      borderBottom: "2px solid var(--f1-red)",
+      borderBottom: '2px solid var(--f1-red)',
     });
   });
 
-  it("marks a link as active for nested routes", () => {
-    mockUsePathname.mockReturnValue("/drivers/44");
+  it('marks a link as active for nested routes', () => {
+    mockUsePathname.mockReturnValue('/drivers/44');
 
     render(<NavBar />);
 
-    const activeLink = screen.getByRole("link", { name: "Drivers" });
-    const inactiveLink = screen.getByRole("link", { name: "Races" });
+    const activeLink = screen.getByRole('link', { name: 'Drivers' });
+    const inactiveLink = screen.getByRole('link', { name: 'Races' });
 
     expect(activeLink).toHaveStyle({
-      color: "var(--f1-red)",
+      color: 'var(--f1-red)',
     });
-    expect(activeLink).toHaveClass("text-foreground");
-    expect(inactiveLink).toHaveClass("text-muted");
+    expect(activeLink).toHaveClass('text-foreground');
+    expect(inactiveLink).toHaveClass('text-muted');
   });
 });

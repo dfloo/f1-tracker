@@ -1,8 +1,8 @@
 ---
-name: "Test Writer"
-description: "Use when writing unit tests, integration tests, route handler tests, API tests, or React UI component tests with Vitest and Testing Library in Next.js App Router projects."
+name: 'Test Writer'
+description: 'Use when writing unit tests, integration tests, route handler tests, API tests, or React UI component tests with Vitest and Testing Library in Next.js App Router projects.'
 tools: [read, search, edit, execute]
-argument-hint: "Describe the target file, behavior to validate, and whether you want unit or integration coverage."
+argument-hint: 'Describe the target file, behavior to validate, and whether you want unit or integration coverage.'
 user-invocable: true
 ---
 
