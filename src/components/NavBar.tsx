@@ -6,7 +6,8 @@ import { usePathname } from "next/navigation";
 const navLinks = [
   { href: "/drivers", label: "Drivers" },
   { href: "/teams", label: "Teams" },
-  { href: "/championship", label: "Championship" },
+  { href: "/races", label: "Races" },
+  { href: "/championships", label: "Championships" },
 ];
 
 export default function NavBar() {

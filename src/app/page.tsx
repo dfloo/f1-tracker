@@ -2,24 +2,31 @@ import CategoryCard from "@/components/CategoryCard";
 
 const categories = [
   {
-    title: "Driver Stats",
+    title: "Drivers",
     description:
       "Explore lap times, race results, career statistics, and head-to-head comparisons for every driver on the grid.",
     href: "/drivers",
     icon: "🏎️",
   },
   {
-    title: "Team Stats",
+    title: "Teams",
     description:
       "Dig into constructor performance, pit stop data, points tallies, and season-by-season team breakdowns.",
     href: "/teams",
     icon: "🔧",
   },
   {
-    title: "Championship",
+    title: "Races",
+    description:
+      "Track race weekends with session schedules, circuit details, results, and key moments from every Grand Prix.",
+    href: "/races",
+    icon: "🏁",
+  },
+  {
+    title: "Championships",
     description:
       "Follow the Drivers' and Constructors' championship standings, race calendars, and historical season results.",
-    href: "/championship",
+    href: "/championships",
     icon: "🏆",
   },
 ];
@@ -41,12 +48,12 @@ export default function Home() {
             <span style={{ color: "var(--f1-red)" }}>Tracker</span>
           </h1>
           <p className="mt-4 max-w-xl mx-auto text-lg text-muted leading-relaxed">
-            Your hub for Formula 1 data — drivers, teams, and championship
-            standings all in one place.
+            Your hub for Formula 1 data — drivers, teams, races, and
+            championship standings all in one place.
           </p>
         </div>
 
-        <div className="grid gap-6 sm:grid-cols-3">
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {categories.map((cat) => (
             <CategoryCard key={cat.href} {...cat} />
           ))}
