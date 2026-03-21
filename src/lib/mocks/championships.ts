@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
 
-import type { ChampionshipYearData } from '@/types/championship';
+import type { ChampionshipYearData, DriversSeasonData } from '@/types/championship';
 
 type RaceInfo = {
   raceId: number;
@@ -231,6 +231,40 @@ function getDataset() {
   return cachedDataset;
 }
 
+function getSeasonDriverIds(dataset: CsvDataset, races: RaceInfo[]) {
+  const driverIds = new Set<number>();
+
+  for (const race of races) {
+    const standings = dataset.cumulativePointsByRaceDriver.get(race.raceId);
+    const results = dataset.raceResultByRaceDriver.get(race.raceId);
+
+    if (standings) {
+      for (const driverId of standings.keys()) {
+        driverIds.add(driverId);
+      }
+    }
+
+    if (results) {
+      for (const driverId of results.keys()) {
+        driverIds.add(driverId);
+      }
+    }
+  }
+
+  return Array.from(driverIds);
+}
+
+function compareDriversByPointsAndName(
+  left: { name: string; latestPoints: number },
+  right: { name: string; latestPoints: number },
+) {
+  if (right.latestPoints !== left.latestPoints) {
+    return right.latestPoints - left.latestPoints;
+  }
+
+  return left.name.localeCompare(right.name);
+}
+
 export const championshipYears = Array.from(getDataset().racesByYear.keys()).sort(
   (a, b) => b - a,
 );
@@ -243,19 +277,7 @@ export function getChampionshipYearFromMocks(year: number): ChampionshipYearData
     return null;
   }
 
-  const driverIds = new Set<number>();
-
-  for (const race of races) {
-    const standings = dataset.cumulativePointsByRaceDriver.get(race.raceId);
-
-    if (standings) {
-      for (const driverId of standings.keys()) {
-        driverIds.add(driverId);
-      }
-    }
-  }
-
-  const drivers = Array.from(driverIds)
+  const drivers = getSeasonDriverIds(dataset, races)
     .map((driverId) => {
       let latestPoints = 0;
 
@@ -295,17 +317,52 @@ export function getChampionshipYearFromMocks(year: number): ChampionshipYearData
         color: preferredColor,
         cumulativePoints,
         raceResults,
+        latestPoints,
       };
     })
     .filter((driver) => (driver.cumulativePoints.at(-1) ?? 0) > 0)
-    .sort(
-      (a, b) =>
-        (b.cumulativePoints.at(-1) ?? 0) - (a.cumulativePoints.at(-1) ?? 0),
-    );
+    .sort(compareDriversByPointsAndName)
+    .map(({ latestPoints: _latestPoints, ...driver }) => driver);
 
   return {
     year,
     races: races.map((race) => ({ round: race.round, name: race.name })),
+    drivers,
+  };
+}
+
+export function getDriverSeasonFromMocks(year: number): DriversSeasonData | null {
+  const dataset = getDataset();
+  const races = dataset.racesByYear.get(year);
+
+  if (!races || races.length === 0) {
+    return null;
+  }
+
+  const drivers = getSeasonDriverIds(dataset, races)
+    .map((driverId) => {
+      let latestPoints = 0;
+
+      for (const race of races) {
+        const racePoints = dataset.cumulativePointsByRaceDriver
+          .get(race.raceId)
+          ?.get(driverId);
+
+        if (racePoints !== undefined) {
+          latestPoints = racePoints;
+        }
+      }
+
+      return {
+        id: String(driverId),
+        name: dataset.driverNamesById.get(driverId) ?? `Driver ${driverId}`,
+        latestPoints,
+      };
+    })
+    .sort(compareDriversByPointsAndName);
+
+  return {
+    year,
     drivers,
   };
 }
