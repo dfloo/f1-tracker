@@ -33,7 +33,7 @@ export default function RootLayout({
       <body className="bg-background text-foreground flex h-full flex-col overflow-hidden">
         <ThemeProvider>
           <NavBar />
-          <main className="flex flex-1 flex-col overflow-hidden">
+          <main className="flex min-h-0 flex-1 flex-col overflow-hidden">
             {children}
           </main>
         </ThemeProvider>

@@ -44,3 +44,19 @@ export interface ChampionshipYearResponse {
   availableYears: number[];
   data: ChampionshipYearData;
 }
+
+export interface DriverSeasonCard {
+  id: string;
+  name: string;
+  latestPoints: number;
+}
+
+export interface DriversSeasonData {
+  year: number;
+  drivers: DriverSeasonCard[];
+}
+
+export interface DriversSeasonResponse {
+  availableYears: number[];
+  data: DriversSeasonData;
+}

@@ -3,8 +3,9 @@
 import { useEffect, useState } from 'react';
 
 import YearSelect from '@/components/championships/YearSelect';
-import DriverCard from '@/components/drivers/DriverCard';
 import type { DriversSeasonResponse } from '@/types/championship';
+
+import DriverCard from './DriverCard';
 
 const defaultYears = [2024];
 
@@ -16,7 +17,7 @@ function buildEndpoint(year: number) {
   return `/api/drivers?${query.toString()}`;
 }
 
-export default function DriversPage() {
+export default function DriversExplorer() {
   const [selectedYear, setSelectedYear] = useState<number>(2024);
   const [availableYears, setAvailableYears] = useState<number[]>(defaultYears);
   const [payload, setPayload] = useState<DriversSeasonResponse | null>(null);
@@ -70,53 +71,51 @@ export default function DriversPage() {
   }, [selectedYear]);
 
   return (
-    <div className="h-full min-h-0 w-full overflow-x-hidden overflow-y-auto">
-      <div className="mx-auto w-full max-w-7xl px-6">
-        <div className="bg-background sticky top-0 z-10 flex flex-col gap-4 py-6 sm:flex-row sm:items-end sm:justify-between">
-          <YearSelect
-            years={availableYears}
-            selectedYear={selectedYear}
-            onChange={setSelectedYear}
-            disabled={isLoading}
-          />
-          {payload ? (
-            <p className="text-muted text-sm">
-              {payload.data.drivers.length} drivers in {payload.data.year}
+    <div className="w-full min-w-0 pb-6">
+      <div className="bg-background sticky top-0 z-10 flex flex-col gap-4 py-6 sm:flex-row sm:items-end sm:justify-between">
+        <YearSelect
+          years={availableYears}
+          selectedYear={selectedYear}
+          onChange={setSelectedYear}
+          disabled={isLoading}
+        />
+        {payload ? (
+          <p className="text-muted text-sm">
+            {payload.data.drivers.length} drivers in {payload.data.year}
+          </p>
+        ) : null}
+      </div>
+
+      <div className="flex min-w-0 flex-col gap-6">
+        {isLoading ? (
+          <div className="border-border bg-surface text-muted flex items-center justify-center rounded-xl border py-24 text-sm">
+            Loading drivers...
+          </div>
+        ) : null}
+
+        {!isLoading && errorMessage ? (
+          <div
+            role="alert"
+            className="border-border bg-surface rounded-xl border px-4 py-5"
+          >
+            <p className="text-foreground text-sm font-semibold">
+              Unable to load drivers
             </p>
-          ) : null}
-        </div>
+            <p className="text-muted mt-1 text-sm">{errorMessage}</p>
+          </div>
+        ) : null}
 
-        <div className="flex min-w-0 flex-col gap-6 pb-6">
-          {isLoading ? (
-            <div className="border-border bg-surface text-muted flex items-center justify-center rounded-xl border py-24 text-sm">
-              Loading drivers...
-            </div>
-          ) : null}
-
-          {!isLoading && errorMessage ? (
-            <div
-              role="alert"
-              className="border-border bg-surface rounded-xl border px-4 py-5"
-            >
-              <p className="text-foreground text-sm font-semibold">
-                Unable to load drivers
-              </p>
-              <p className="text-muted mt-1 text-sm">{errorMessage}</p>
-            </div>
-          ) : null}
-
-          {!isLoading && !errorMessage && payload ? (
-            <div
-              role="list"
-              aria-label={`Drivers for ${payload.data.year}`}
-              className="grid w-full min-w-0 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5"
-            >
-              {payload.data.drivers.map((driver) => (
-                <DriverCard key={driver.id} driver={driver} />
-              ))}
-            </div>
-          ) : null}
-        </div>
+        {!isLoading && !errorMessage && payload ? (
+          <div
+            role="list"
+            aria-label={`Drivers for ${payload.data.year}`}
+            className="grid w-full min-w-0 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5"
+          >
+            {payload.data.drivers.map((driver) => (
+              <DriverCard key={driver.id} driver={driver} />
+            ))}
+          </div>
+        ) : null}
       </div>
     </div>
   );
