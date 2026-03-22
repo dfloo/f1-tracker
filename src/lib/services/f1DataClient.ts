@@ -1,5 +1,6 @@
 import type {
   ChampionshipYearResponse,
+  ConstructorsSeasonResponse,
   DriversSeasonResponse,
 } from '@/types/championship';
 
@@ -117,5 +118,17 @@ export function fetchDriversByYear(params: {
     year: params.year,
     signal: params.signal,
     fallbackMessage: 'Failed to load drivers.',
+  });
+}
+
+export function fetchConstructorsByYear(params: {
+  year: number;
+  signal: AbortSignal;
+}) {
+  return fetchFromApi<ConstructorsSeasonResponse>({
+    pathname: '/api/f1/constructors',
+    year: params.year,
+    signal: params.signal,
+    fallbackMessage: 'Failed to load constructors.',
   });
 }

@@ -1,10 +1,31 @@
 import { NextRequest } from 'next/server';
-import { describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { GET } from './route';
 
 describe('GET /api/f1/standings', () => {
-  it('returns driver standings timeline for a valid season', async () => {
+  beforeEach(() => {
+    vi.restoreAllMocks();
+    vi.stubEnv('API_SERVER_URL', 'https://backend.example.com');
+  });
+
+  it('proxies standings response for a valid season request', async () => {
+    const upstreamPayload = {
+      season: 2021,
+      championship: 'drivers',
+      timeline: [],
+      series: [],
+    };
+    const fetchMock = vi.fn().mockResolvedValue({
+      ok: true,
+      status: 200,
+      text: async () => JSON.stringify(upstreamPayload),
+      headers: new Headers({
+        'content-type': 'application/json',
+      }),
+    });
+    vi.stubGlobal('fetch', fetchMock);
+
     const request = new NextRequest(
       'http://localhost:3000/api/f1/standings?season=2021&championship=drivers',
     );
@@ -13,17 +34,20 @@ describe('GET /api/f1/standings', () => {
     const payload = await response.json();
 
     expect(response.status).toBe(200);
-    expect(payload.data.season).toBe(2021);
-    expect(payload.data.championship).toBe('drivers');
-    expect(Array.isArray(payload.data.timeline)).toBe(true);
-    expect(payload.data.timeline.length).toBeGreaterThan(0);
-    expect(Array.isArray(payload.data.series)).toBe(true);
-    expect(payload.data.series.length).toBeGreaterThan(0);
+    expect(fetchMock).toHaveBeenCalledWith(
+      'https://backend.example.com/api/f1/standings?season=2021&championship=drivers',
+      expect.objectContaining({ cache: 'no-store', method: 'GET' }),
+    );
+    expect(payload.season).toBe(2021);
+    expect(payload.championship).toBe('drivers');
   });
 
   it('returns 400 for invalid championship values', async () => {
+    const fetchMock = vi.fn();
+    vi.stubGlobal('fetch', fetchMock);
+
     const request = new NextRequest(
-      'http://localhost:3000/api/f1/standings?season=2021&championship=teams',
+      'http://localhost:3000/api/f1/standings?season=2021&championship=team',
     );
 
     const response = await GET(request);
@@ -31,5 +55,6 @@ describe('GET /api/f1/standings', () => {
 
     expect(response.status).toBe(400);
     expect(payload.error.code).toBe('invalid_query');
+    expect(fetchMock).not.toHaveBeenCalled();
   });
 });
