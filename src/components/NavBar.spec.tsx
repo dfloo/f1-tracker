@@ -57,9 +57,9 @@ describe('NavBar', () => {
       'href',
       '/drivers',
     );
-    expect(screen.getByRole('link', { name: 'Teams' })).toHaveAttribute(
+    expect(screen.getByRole('link', { name: 'Constructors' })).toHaveAttribute(
       'href',
-      '/teams',
+      '/constructors',
     );
     expect(screen.getByRole('link', { name: 'Races' })).toHaveAttribute(
       'href',
@@ -72,11 +72,11 @@ describe('NavBar', () => {
   });
 
   it('marks a link as active when pathname matches exactly', () => {
-    mockUsePathname.mockReturnValue('/teams');
+    mockUsePathname.mockReturnValue('/constructors');
 
     render(<NavBar />);
 
-    const activeLink = screen.getByRole('link', { name: 'Teams' });
+    const activeLink = screen.getByRole('link', { name: 'Constructors' });
     const inactiveLink = screen.getByRole('link', { name: 'Drivers' });
 
     expect(activeLink).toHaveStyle({

@@ -4,6 +4,7 @@ import {
   clearF1DataClientCache,
   CLIENT_CACHE_TTL_MS,
   fetchChampionshipByYear,
+  fetchConstructorsByYear,
   fetchDriversByYear,
 } from './f1DataClient';
 
@@ -61,6 +62,13 @@ describe('f1DataClient cache', () => {
         drivers: [],
       },
     };
+    const constructorsPayload = {
+      availableYears: [2024],
+      data: {
+        year: 2024,
+        constructors: [],
+      },
+    };
     const championshipPayload = {
       availableYears: [2024],
       data: {
@@ -78,6 +86,10 @@ describe('f1DataClient cache', () => {
       })
       .mockResolvedValueOnce({
         ok: true,
+        json: async () => constructorsPayload,
+      })
+      .mockResolvedValueOnce({
+        ok: true,
         json: async () => championshipPayload,
       });
 
@@ -87,12 +99,16 @@ describe('f1DataClient cache', () => {
       year: 2024,
       signal: new AbortController().signal,
     });
+    await fetchConstructorsByYear({
+      year: 2024,
+      signal: new AbortController().signal,
+    });
     await fetchChampionshipByYear({
       year: 2024,
       signal: new AbortController().signal,
     });
 
-    expect(fetchMock).toHaveBeenCalledTimes(2);
+    expect(fetchMock).toHaveBeenCalledTimes(3);
     expect(fetchMock).toHaveBeenNthCalledWith(
       1,
       '/api/f1/drivers?year=2024',
@@ -100,6 +116,11 @@ describe('f1DataClient cache', () => {
     );
     expect(fetchMock).toHaveBeenNthCalledWith(
       2,
+      '/api/f1/constructors?year=2024',
+      expect.objectContaining({ cache: 'no-store', method: 'GET' }),
+    );
+    expect(fetchMock).toHaveBeenNthCalledWith(
+      3,
       '/api/f1/championships?year=2024',
       expect.objectContaining({ cache: 'no-store', method: 'GET' }),
     );

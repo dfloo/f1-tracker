@@ -1,7 +1,8 @@
 import type { NextRequest } from 'next/server';
+import { NextResponse } from 'next/server';
 
-import { getEventsBySeason } from '@/lib/server/domainService';
-import { errorJson, okJson, parseIntegerQuery } from '@/lib/server/http';
+import { getBackendBaseUrl } from '@/lib/backend';
+import { errorJson, parseIntegerQuery } from '@/lib/server/http';
 
 export const dynamic = 'force-dynamic';
 
@@ -16,15 +17,43 @@ export async function GET(request: NextRequest) {
     });
   }
 
-  const events = getEventsBySeason(season);
+  let upstreamUrl: URL;
 
-  if (!events) {
+  try {
+    upstreamUrl = new URL(`${getBackendBaseUrl()}/api/f1/events`);
+  } catch {
     return errorJson({
-      code: 'season_not_found',
-      message: 'Requested season was not found.',
-      status: 404,
+      code: 'server_misconfigured',
+      message: 'API server is not configured.',
+      status: 500,
     });
   }
 
-  return okJson({ season, events });
+  upstreamUrl.searchParams.set('season', String(season));
+
+  try {
+    const upstreamResponse = await fetch(upstreamUrl.toString(), {
+      method: 'GET',
+      cache: 'no-store',
+    });
+
+    const upstreamBody = await upstreamResponse.text();
+    const contentType = upstreamResponse.headers.get('content-type');
+    const headers = new Headers();
+
+    if (contentType) {
+      headers.set('content-type', contentType);
+    }
+
+    return new NextResponse(upstreamBody, {
+      status: upstreamResponse.status,
+      headers,
+    });
+  } catch {
+    return errorJson({
+      code: 'upstream_unavailable',
+      message: 'Failed to reach upstream API server.',
+      status: 502,
+    });
+  }
 }

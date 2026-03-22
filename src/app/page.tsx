@@ -9,10 +9,10 @@ const categories = [
     icon: '🏎️',
   },
   {
-    title: 'Teams',
+    title: 'Constructors',
     description:
-      'Dig into constructor performance, pit stop data, points tallies, and season-by-season team breakdowns.',
-    href: '/teams',
+      'Dig into constructor performance, pit stop data, points tallies, and season-by-season constructor breakdowns.',
+    href: '/constructors',
     icon: '🔧',
   },
   {
@@ -47,7 +47,7 @@ export default function Home() {
             F1 <span style={{ color: 'var(--f1-red)' }}>Tracker</span>
           </h1>
           <p className="text-muted mx-auto mt-4 max-w-xl text-lg leading-relaxed">
-            Your hub for Formula 1 data — drivers, teams, races, and
+            Your hub for Formula 1 data — drivers, constructors, races, and
             championship standings all in one place.
           </p>
         </div>

@@ -60,3 +60,20 @@ export interface DriversSeasonResponse {
   availableYears: number[];
   data: DriversSeasonData;
 }
+
+export interface ConstructorSeasonCard {
+  id: string;
+  name: string;
+  latestPoints: number;
+  color: string;
+}
+
+export interface ConstructorsSeasonData {
+  year: number;
+  constructors: ConstructorSeasonCard[];
+}
+
+export interface ConstructorsSeasonResponse {
+  availableYears: number[];
+  data: ConstructorsSeasonData;
+}
