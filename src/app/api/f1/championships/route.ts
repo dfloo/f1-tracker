@@ -9,8 +9,9 @@ export const dynamic = 'force-dynamic';
 const defaultYear = 2024;
 
 export async function GET(request: NextRequest) {
+  const hasYearParam = request.nextUrl.searchParams.has('year');
   const yearParam = request.nextUrl.searchParams.get('year');
-  const year = yearParam ? parseIntegerQuery(yearParam) : defaultYear;
+  const year = hasYearParam ? parseIntegerQuery(yearParam) : defaultYear;
 
   if (year === null) {
     return errorJson({

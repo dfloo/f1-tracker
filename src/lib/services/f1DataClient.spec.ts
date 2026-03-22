@@ -140,4 +140,46 @@ describe('f1DataClient cache', () => {
 
     vi.useRealTimers();
   });
+
+  it('treats falsy cached values as cache hits', async () => {
+    const fetchMock = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => 0,
+    });
+
+    vi.stubGlobal('fetch', fetchMock);
+
+    const first = await fetchDriversByYear({
+      year: 2024,
+      signal: new AbortController().signal,
+    });
+    const second = await fetchDriversByYear({
+      year: 2024,
+      signal: new AbortController().signal,
+    });
+
+    expect(first as unknown).toBe(0);
+    expect(second as unknown).toBe(0);
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
+
+  it('uses nested API error message when request fails', async () => {
+    const fetchMock = vi.fn().mockResolvedValue({
+      ok: false,
+      json: async () => ({
+        error: {
+          message: 'Backend validation failed.',
+        },
+      }),
+    });
+
+    vi.stubGlobal('fetch', fetchMock);
+
+    await expect(
+      fetchDriversByYear({
+        year: 2024,
+        signal: new AbortController().signal,
+      }),
+    ).rejects.toThrow('Backend validation failed.');
+  });
 });

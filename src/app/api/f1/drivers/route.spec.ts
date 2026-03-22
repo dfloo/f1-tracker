@@ -86,6 +86,20 @@ describe('GET /api/f1/drivers', () => {
     expect(fetchMock).not.toHaveBeenCalled();
   });
 
+  it('returns 400 for empty year values', async () => {
+    const fetchMock = vi.fn();
+    vi.stubGlobal('fetch', fetchMock);
+
+    const request = new NextRequest('http://localhost:3000/api/f1/drivers?year=');
+
+    const response = await GET(request);
+    const payload = await response.json();
+
+    expect(response.status).toBe(400);
+    expect(payload.error.code).toBe('invalid_query');
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
   it('returns 502 when upstream is unavailable', async () => {
     vi.stubGlobal('fetch', vi.fn().mockRejectedValue(new Error('network down')));
 

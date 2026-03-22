@@ -7,12 +7,14 @@ import { errorJson, parseIntegerQuery } from '@/lib/server/http';
 export const dynamic = 'force-dynamic';
 
 export async function GET(request: NextRequest) {
+  const hasSeasonParam = request.nextUrl.searchParams.has('season');
+  const hasYearParam = request.nextUrl.searchParams.has('year');
   const seasonParam = request.nextUrl.searchParams.get('season');
   const yearParam = request.nextUrl.searchParams.get('year');
   const queryValue = seasonParam ?? yearParam;
   const parsedSeason = parseIntegerQuery(queryValue);
 
-  if (seasonParam || yearParam) {
+  if (hasSeasonParam || hasYearParam) {
     if (parsedSeason === null) {
       return errorJson({
         code: 'invalid_query',
@@ -20,7 +22,6 @@ export async function GET(request: NextRequest) {
         status: 400,
       });
     }
-
   }
 
   let upstreamUrl: URL;

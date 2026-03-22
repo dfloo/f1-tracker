@@ -5,6 +5,9 @@ import type {
 
 type ApiErrorPayload = {
   message?: string;
+  error?: {
+    message?: string;
+  };
 };
 
 type CacheEntry = {
@@ -64,7 +67,7 @@ async function fetchFromApi<T>(params: {
   const cacheKey = getCacheKey(params.pathname, params.year);
   const cachedValue = getCachedValue<T>(cacheKey);
 
-  if (cachedValue) {
+  if (cachedValue !== null) {
     return cachedValue;
   }
 
@@ -83,7 +86,8 @@ async function fetchFromApi<T>(params: {
       payload = null;
     }
 
-    throw new Error(payload?.message ?? params.fallbackMessage);
+    const errorMessage = payload?.message ?? payload?.error?.message;
+    throw new Error(errorMessage ?? params.fallbackMessage);
   }
 
   const parsedValue = (await response.json()) as T;
