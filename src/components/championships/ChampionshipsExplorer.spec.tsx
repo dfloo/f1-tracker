@@ -2,6 +2,8 @@ import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
+import { clearF1DataClientCache } from '@/lib/services/f1DataClient';
+
 import ChampionshipsExplorer from './ChampionshipsExplorer';
 
 vi.mock('./PointsProgressChart', () => ({
@@ -96,6 +98,7 @@ const yearPayload = {
 describe('ChampionshipsExplorer', () => {
   beforeEach(() => {
     vi.restoreAllMocks();
+    clearF1DataClientCache();
   });
 
   it('loads 2024 drivers data by default', async () => {
@@ -110,7 +113,7 @@ describe('ChampionshipsExplorer', () => {
 
     await waitFor(() => {
       expect(fetchMock).toHaveBeenCalledWith(
-        '/api/championships?year=2024',
+        '/api/f1/championships?year=2024',
         expect.objectContaining({ cache: 'no-store', method: 'GET' }),
       );
     });
@@ -184,7 +187,7 @@ describe('ChampionshipsExplorer', () => {
       await screen.findByText(/chart for 2023 drivers/i),
     ).toBeInTheDocument();
     expect(fetchMock).toHaveBeenLastCalledWith(
-      '/api/championships?year=2023',
+      '/api/f1/championships?year=2023',
       expect.objectContaining({ cache: 'no-store', method: 'GET' }),
     );
   });

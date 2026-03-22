@@ -2,6 +2,8 @@ import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
+import { clearF1DataClientCache } from '@/lib/services/f1DataClient';
+
 import DriversExplorer from './DriversExplorer';
 
 const seasonPayload = {
@@ -36,6 +38,7 @@ const seasonPayload = {
 describe('DriversExplorer', () => {
   beforeEach(() => {
     vi.restoreAllMocks();
+    clearF1DataClientCache();
   });
 
   it('loads the selected season and renders drivers in points order', async () => {
@@ -50,7 +53,7 @@ describe('DriversExplorer', () => {
 
     await waitFor(() => {
       expect(fetchMock).toHaveBeenCalledWith(
-        '/api/drivers?year=2024',
+        '/api/f1/drivers?year=2024',
         expect.objectContaining({ cache: 'no-store', method: 'GET' }),
       );
     });
@@ -109,7 +112,7 @@ describe('DriversExplorer', () => {
       await screen.findByRole('heading', { name: /fernando alonso/i }),
     ).toBeInTheDocument();
     expect(fetchMock).toHaveBeenLastCalledWith(
-      '/api/drivers?year=2023',
+      '/api/f1/drivers?year=2023',
       expect.objectContaining({ cache: 'no-store', method: 'GET' }),
     );
   });
