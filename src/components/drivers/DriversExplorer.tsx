@@ -1,74 +1,19 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-
 import YearSelect from '@/components/championships/YearSelect';
-import type { DriversSeasonResponse } from '@/types/championship';
+import { useDriversSeason } from '@/hooks/useDriversSeason';
 
 import DriverCard from './DriverCard';
 
-const defaultYears = [2024];
-
-function buildEndpoint(year: number) {
-  const query = new URLSearchParams({
-    year: String(year),
-  });
-
-  return `/api/drivers?${query.toString()}`;
-}
-
 export default function DriversExplorer() {
-  const [selectedYear, setSelectedYear] = useState<number>(2024);
-  const [availableYears, setAvailableYears] = useState<number[]>(defaultYears);
-  const [payload, setPayload] = useState<DriversSeasonResponse | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
-
-  useEffect(() => {
-    const abortController = new AbortController();
-
-    async function loadDrivers() {
-      setIsLoading(true);
-      setErrorMessage(null);
-
-      try {
-        const response = await fetch(buildEndpoint(selectedYear), {
-          method: 'GET',
-          signal: abortController.signal,
-          cache: 'no-store',
-        });
-
-        if (!response.ok) {
-          const payload = (await response.json()) as { message?: string };
-          throw new Error(payload.message ?? 'Failed to load drivers.');
-        }
-
-        const nextPayload = (await response.json()) as DriversSeasonResponse;
-
-        setPayload(nextPayload);
-        setAvailableYears(nextPayload.availableYears);
-      } catch (error) {
-        if (abortController.signal.aborted) {
-          return;
-        }
-
-        const fallbackMessage = 'Failed to load drivers.';
-        setErrorMessage(
-          error instanceof Error ? error.message : fallbackMessage,
-        );
-      } finally {
-        if (!abortController.signal.aborted) {
-          setIsLoading(false);
-        }
-      }
-    }
-
-    void loadDrivers();
-
-    return () => {
-      abortController.abort();
-    };
-  }, [selectedYear]);
+  const {
+    selectedYear,
+    setSelectedYear,
+    availableYears,
+    payload,
+    isLoading,
+    errorMessage,
+  } = useDriversSeason();
 
   return (
     <div className="w-full min-w-0 pb-6">
