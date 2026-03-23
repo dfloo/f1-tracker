@@ -5,11 +5,7 @@ import { useEffect, useState } from 'react';
 import { fetchEventsByYear } from '@/lib/services/f1DataClient';
 import type { EventsSeasonResponse } from '@/types/championship';
 
-const defaultYears = [2024];
-
-export function useEventsSeason(defaultYear = 2024) {
-  const [selectedYear, setSelectedYear] = useState<number>(defaultYear);
-  const [availableYears, setAvailableYears] = useState<number[]>(defaultYears);
+export function useEventsSeason(selectedYear: number) {
   const [payload, setPayload] = useState<EventsSeasonResponse | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -28,7 +24,6 @@ export function useEventsSeason(defaultYear = 2024) {
         });
 
         setPayload(nextPayload);
-        setAvailableYears(nextPayload.availableYears);
       } catch (error) {
         if (abortController.signal.aborted) {
           return;
@@ -53,9 +48,6 @@ export function useEventsSeason(defaultYear = 2024) {
   }, [selectedYear]);
 
   return {
-    selectedYear,
-    setSelectedYear,
-    availableYears,
     payload,
     isLoading,
     errorMessage,

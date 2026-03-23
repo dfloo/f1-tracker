@@ -1,5 +1,4 @@
 import { render, screen, waitFor, within } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { clearF1DataClientCache } from '@/lib/services/f1DataClient';
@@ -53,7 +52,7 @@ describe('ConstructorsExplorer', () => {
 
     vi.stubGlobal('fetch', fetchMock);
 
-    render(<ConstructorsExplorer />);
+    render(<ConstructorsExplorer selectedYear={2024} />);
 
     await waitFor(() => {
       expect(fetchMock).toHaveBeenCalledWith(
@@ -78,7 +77,6 @@ describe('ConstructorsExplorer', () => {
   });
 
   it('refetches when the season changes', async () => {
-    const user = userEvent.setup();
     const fetchMock = vi
       .fn()
       .mockResolvedValueOnce({
@@ -105,13 +103,13 @@ describe('ConstructorsExplorer', () => {
 
     vi.stubGlobal('fetch', fetchMock);
 
-    render(<ConstructorsExplorer />);
+    const { rerender } = render(<ConstructorsExplorer selectedYear={2024} />);
 
     expect(
       await screen.findByRole('heading', { name: /red bull/i }),
     ).toBeInTheDocument();
 
-    await user.selectOptions(screen.getByLabelText(/season/i), '2023');
+    rerender(<ConstructorsExplorer selectedYear={2023} />);
 
     expect(
       await screen.findByRole('heading', { name: /mclaren/i }),
@@ -130,7 +128,7 @@ describe('ConstructorsExplorer', () => {
 
     vi.stubGlobal('fetch', fetchMock);
 
-    render(<ConstructorsExplorer />);
+    render(<ConstructorsExplorer selectedYear={2024} />);
 
     expect(await screen.findByRole('alert')).toHaveTextContent(
       /unsupported constructors season/i,

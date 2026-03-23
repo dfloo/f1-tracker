@@ -4,7 +4,6 @@ import { useMemo, useState } from 'react';
 
 import CategoryTabs from '@/components/championships/CategoryTabs';
 import PointsProgressChart from '@/components/championships/PointsProgressChart';
-import YearSelect from '@/components/championships/YearSelect';
 import {
   toConstructorsProgress,
   toDriversProgress,
@@ -12,15 +11,15 @@ import {
 import { useChampionshipSeason } from '@/hooks/useChampionshipSeason';
 import type { ChampionshipCategory } from '@/types/championship';
 
-export default function ChampionshipsExplorer() {
-  const {
-    selectedYear,
-    setSelectedYear,
-    availableYears,
-    payload,
-    isLoading,
-    errorMessage,
-  } = useChampionshipSeason();
+interface ChampionshipsExplorerProps {
+  selectedYear: number;
+}
+
+export default function ChampionshipsExplorer({
+  selectedYear,
+}: ChampionshipsExplorerProps) {
+  const { payload, isLoading, errorMessage } =
+    useChampionshipSeason(selectedYear);
   const [selectedCategory, setSelectedCategory] =
     useState<ChampionshipCategory>('drivers');
 
@@ -36,13 +35,7 @@ export default function ChampionshipsExplorer() {
 
   return (
     <div className="flex h-full flex-col gap-6">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-        <YearSelect
-          years={availableYears}
-          selectedYear={selectedYear}
-          onChange={setSelectedYear}
-          disabled={isLoading}
-        />
+      <div className="flex justify-end">
         <CategoryTabs
           selectedCategory={selectedCategory}
           onChange={setSelectedCategory}

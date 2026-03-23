@@ -1,5 +1,4 @@
 import { render, screen, waitFor, within } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { clearF1DataClientCache } from '@/lib/services/f1DataClient';
@@ -44,7 +43,7 @@ describe('EventsExplorer', () => {
 
     vi.stubGlobal('fetch', fetchMock);
 
-    render(<EventsExplorer />);
+    render(<EventsExplorer selectedYear={2024} />);
 
     await waitFor(() => {
       expect(fetchMock).toHaveBeenCalledWith(
@@ -77,13 +76,13 @@ describe('EventsExplorer', () => {
 
     vi.stubGlobal('fetch', fetchMock);
 
-    render(<EventsExplorer />);
+    render(<EventsExplorer selectedYear={2024} />);
 
     const linkedEvent = await screen.findByRole('link', {
       name: /australian grand prix/i,
     });
 
-    expect(linkedEvent).toHaveAttribute('href', '/events/aus-2024');
+    expect(linkedEvent).toHaveAttribute('href', '/events/aus-2024?year=2024');
 
     const unlinkedHeading = screen.getByRole('heading', {
       name: /saudi arabian grand prix/i,
@@ -93,7 +92,6 @@ describe('EventsExplorer', () => {
   });
 
   it('refetches when the season changes', async () => {
-    const user = userEvent.setup();
     const fetchMock = vi
       .fn()
       .mockResolvedValueOnce({
@@ -119,13 +117,13 @@ describe('EventsExplorer', () => {
 
     vi.stubGlobal('fetch', fetchMock);
 
-    render(<EventsExplorer />);
+    const { rerender } = render(<EventsExplorer selectedYear={2024} />);
 
     expect(
       await screen.findByRole('heading', { name: /bahrain grand prix/i }),
     ).toBeInTheDocument();
 
-    await user.selectOptions(screen.getByLabelText(/season/i), '2023');
+    rerender(<EventsExplorer selectedYear={2023} />);
 
     expect(
       await screen.findByRole('heading', { name: /monaco grand prix/i }),
@@ -144,7 +142,7 @@ describe('EventsExplorer', () => {
 
     vi.stubGlobal('fetch', fetchMock);
 
-    render(<EventsExplorer />);
+    render(<EventsExplorer selectedYear={2024} />);
 
     expect(await screen.findByRole('alert')).toHaveTextContent(
       /unsupported event season/i,

@@ -109,7 +109,7 @@ describe('ChampionshipsExplorer', () => {
 
     vi.stubGlobal('fetch', fetchMock);
 
-    render(<ChampionshipsExplorer />);
+    render(<ChampionshipsExplorer selectedYear={2024} />);
 
     await waitFor(() => {
       expect(fetchMock).toHaveBeenCalledWith(
@@ -132,7 +132,7 @@ describe('ChampionshipsExplorer', () => {
 
     vi.stubGlobal('fetch', fetchMock);
 
-    render(<ChampionshipsExplorer />);
+    render(<ChampionshipsExplorer selectedYear={2024} />);
 
     expect(
       await screen.findByText(/chart for 2024 drivers: max verstappen/i),
@@ -155,7 +155,6 @@ describe('ChampionshipsExplorer', () => {
   });
 
   it('refetches when year changes', async () => {
-    const user = userEvent.setup();
     const fetchMock = vi
       .fn()
       .mockResolvedValueOnce({
@@ -175,13 +174,13 @@ describe('ChampionshipsExplorer', () => {
 
     vi.stubGlobal('fetch', fetchMock);
 
-    render(<ChampionshipsExplorer />);
+    const { rerender } = render(<ChampionshipsExplorer selectedYear={2024} />);
 
     expect(
       await screen.findByText(/chart for 2024 drivers: max verstappen/i),
     ).toBeInTheDocument();
 
-    await user.selectOptions(screen.getByLabelText(/season/i), '2023');
+    rerender(<ChampionshipsExplorer selectedYear={2023} />);
 
     expect(
       await screen.findByText(/chart for 2023 drivers/i),
@@ -200,7 +199,7 @@ describe('ChampionshipsExplorer', () => {
 
     vi.stubGlobal('fetch', fetchMock);
 
-    render(<ChampionshipsExplorer />);
+    render(<ChampionshipsExplorer selectedYear={2024} />);
 
     expect(await screen.findByRole('alert')).toHaveTextContent(
       /unsupported championship year/i,

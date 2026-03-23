@@ -6,12 +6,13 @@ import type { DriverSeasonCard as DriverSeasonCardType } from '@/types/champions
 
 interface DriverCardProps {
   driver: DriverSeasonCardType;
+  selectedYear: number;
 }
 
-export default function DriverCard({ driver }: DriverCardProps) {
+export default function DriverCard({ driver, selectedYear }: DriverCardProps) {
   return (
     <Link
-      href={`/drivers/${driver.id}`}
+      href={`/drivers/${driver.id}?year=${selectedYear}`}
       className="group border-border bg-surface hover:bg-surface-hover flex h-full flex-col gap-4 rounded-xl border p-5 transition-colors hover:border-[var(--f1-red)]"
     >
       <div className="border-border bg-background flex aspect-square items-center justify-center rounded-lg border">

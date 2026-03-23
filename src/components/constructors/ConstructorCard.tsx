@@ -6,12 +6,16 @@ import type { ConstructorSeasonCard as ConstructorSeasonCardType } from '@/types
 
 interface ConstructorCardProps {
   constructor: ConstructorSeasonCardType;
+  selectedYear: number;
 }
 
-export default function ConstructorCard({ constructor }: ConstructorCardProps) {
+export default function ConstructorCard({
+  constructor,
+  selectedYear,
+}: ConstructorCardProps) {
   return (
     <Link
-      href={`/constructors/${constructor.id}`}
+      href={`/constructors/${constructor.id}?year=${selectedYear}`}
       className="group border-border bg-surface hover:bg-surface-hover flex h-full flex-col gap-4 rounded-xl border p-5 transition-colors hover:border-[var(--f1-red)]"
     >
       <div className="border-border bg-background flex aspect-square items-center justify-center rounded-lg border">
