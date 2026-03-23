@@ -74,7 +74,7 @@ describe('f1DataClient cache', () => {
       availableYears: [2024],
       data: {
         year: 2024,
-        races: [],
+        events: [],
         drivers: [],
       },
     };

@@ -1,6 +1,6 @@
 export type ChampionshipCategory = 'drivers' | 'constructors';
 
-export interface ChampionshipRace {
+export interface ChampionshipEvent {
   round: number;
   name: string;
 }
@@ -29,14 +29,14 @@ export interface ChampionshipDriverSeries {
 
 export interface ChampionshipYearData {
   year: number;
-  races: ChampionshipRace[];
+  events: ChampionshipEvent[];
   drivers: ChampionshipDriverSeries[];
 }
 
 export interface ChampionshipProgress {
   year: number;
   category: ChampionshipCategory;
-  races: ChampionshipRace[];
+  events: ChampionshipEvent[];
   series: ChampionshipSeries[];
 }
 

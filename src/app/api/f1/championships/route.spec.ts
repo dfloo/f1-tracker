@@ -13,7 +13,7 @@ describe('GET /api/f1/championships', () => {
     const upstreamPayload = {
       data: {
         year: 2024,
-        races: [],
+        events: [],
         drivers: [],
       },
     };
