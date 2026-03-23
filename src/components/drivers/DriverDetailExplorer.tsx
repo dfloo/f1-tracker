@@ -38,6 +38,10 @@ interface PerformanceGaugeProps {
 }
 
 function asNumber(value: unknown) {
+  if (value === null || value === undefined) {
+    return Number.NaN;
+  }
+
   return typeof value === 'number' ? value : Number(value);
 }
 
@@ -134,7 +138,11 @@ function getSeasonScore(selectedRace: DriverSelectedRaceContext | null) {
 }
 
 function getEndingPosition(selectedRace: DriverSelectedRaceContext | null) {
-  const value = selectedRace?.endingPosition ?? null;
+  if (selectedRace === null) {
+    return 'N/A';
+  }
+
+  const value = selectedRace.endingPosition ?? null;
 
   if (value === null || value === undefined || value === '') {
     return 'DNF';
