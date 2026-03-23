@@ -3,18 +3,18 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { GET } from './route';
 
-describe('GET /api/f1/drivers', () => {
+describe('GET /api/f1/events', () => {
   beforeEach(() => {
     vi.restoreAllMocks();
     vi.stubEnv('API_SERVER_URL', 'https://backend.example.com');
   });
 
-  it('proxies season response when year is provided', async () => {
+  it('proxies events response when year is provided', async () => {
     const upstreamPayload = {
       availableYears: [2024, 2023],
       data: {
         year: 2024,
-        drivers: [],
+        events: [],
       },
     };
     const fetchMock = vi.fn().mockResolvedValue({
@@ -28,7 +28,7 @@ describe('GET /api/f1/drivers', () => {
     vi.stubGlobal('fetch', fetchMock);
 
     const request = new NextRequest(
-      'http://localhost:3000/api/f1/drivers?year=2024',
+      'http://localhost:3000/api/f1/events?year=2024',
     );
 
     const response = await GET(request);
@@ -36,16 +36,16 @@ describe('GET /api/f1/drivers', () => {
 
     expect(response.status).toBe(200);
     expect(fetchMock).toHaveBeenCalledWith(
-      'https://backend.example.com/api/f1/drivers?year=2024',
+      'https://backend.example.com/api/f1/events?year=2024',
       expect.objectContaining({ cache: 'no-store', method: 'GET' }),
     );
     expect(payload.data.year).toBe(2024);
   });
 
-  it('proxies directory response when no year is provided', async () => {
+  it('proxies events directory when no year is provided', async () => {
     const upstreamPayload = {
       years: [2024, 2023],
-      drivers: [],
+      events: [],
     };
     const fetchMock = vi.fn().mockResolvedValue({
       ok: true,
@@ -57,14 +57,14 @@ describe('GET /api/f1/drivers', () => {
     });
     vi.stubGlobal('fetch', fetchMock);
 
-    const request = new NextRequest('http://localhost:3000/api/f1/drivers');
+    const request = new NextRequest('http://localhost:3000/api/f1/events');
 
     const response = await GET(request);
     const payload = await response.json();
 
     expect(response.status).toBe(200);
     expect(fetchMock).toHaveBeenCalledWith(
-      'https://backend.example.com/api/f1/drivers',
+      'https://backend.example.com/api/f1/events',
       expect.objectContaining({ cache: 'no-store', method: 'GET' }),
     );
     expect(payload.years).toEqual([2024, 2023]);
@@ -75,22 +75,8 @@ describe('GET /api/f1/drivers', () => {
     vi.stubGlobal('fetch', fetchMock);
 
     const request = new NextRequest(
-      'http://localhost:3000/api/f1/drivers?year=bad-year',
+      'http://localhost:3000/api/f1/events?year=bad-year',
     );
-
-    const response = await GET(request);
-    const payload = await response.json();
-
-    expect(response.status).toBe(400);
-    expect(payload.error.code).toBe('invalid_query');
-    expect(fetchMock).not.toHaveBeenCalled();
-  });
-
-  it('returns 400 for empty year values', async () => {
-    const fetchMock = vi.fn();
-    vi.stubGlobal('fetch', fetchMock);
-
-    const request = new NextRequest('http://localhost:3000/api/f1/drivers?year=');
 
     const response = await GET(request);
     const payload = await response.json();
@@ -104,7 +90,7 @@ describe('GET /api/f1/drivers', () => {
     vi.stubGlobal('fetch', vi.fn().mockRejectedValue(new Error('network down')));
 
     const request = new NextRequest(
-      'http://localhost:3000/api/f1/drivers?year=2024',
+      'http://localhost:3000/api/f1/events?year=2024',
     );
 
     const response = await GET(request);

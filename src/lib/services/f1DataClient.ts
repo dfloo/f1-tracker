@@ -53,11 +53,10 @@ export function clearF1DataClientCache() {
 
 function buildRelativeApiUrl(params: {
   pathname: string;
-  queryKey: string;
   year: number;
 }) {
   const searchParams = new URLSearchParams({
-    [params.queryKey]: String(params.year),
+    year: String(params.year),
   });
   return `${params.pathname}?${searchParams.toString()}`;
 }
@@ -65,7 +64,6 @@ function buildRelativeApiUrl(params: {
 async function fetchFromApi<T>(params: {
   pathname: string;
   year: number;
-  queryKey?: string;
   signal: AbortSignal;
   fallbackMessage: string;
 }): Promise<T> {
@@ -83,7 +81,6 @@ async function fetchFromApi<T>(params: {
   const response = await fetch(
     buildRelativeApiUrl({
       pathname: params.pathname,
-      queryKey: params.queryKey ?? 'year',
       year: params.year,
     }),
     {

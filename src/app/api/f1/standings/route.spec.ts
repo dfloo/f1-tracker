@@ -9,7 +9,7 @@ describe('GET /api/f1/standings', () => {
     vi.stubEnv('API_SERVER_URL', 'https://backend.example.com');
   });
 
-  it('proxies standings response for a valid season request', async () => {
+  it('proxies standings response for a valid year request', async () => {
     const upstreamPayload = {
       season: 2021,
       championship: 'drivers',
@@ -27,7 +27,7 @@ describe('GET /api/f1/standings', () => {
     vi.stubGlobal('fetch', fetchMock);
 
     const request = new NextRequest(
-      'http://localhost:3000/api/f1/standings?season=2021&championship=drivers',
+      'http://localhost:3000/api/f1/standings?year=2021&championship=drivers',
     );
 
     const response = await GET(request);
@@ -35,7 +35,7 @@ describe('GET /api/f1/standings', () => {
 
     expect(response.status).toBe(200);
     expect(fetchMock).toHaveBeenCalledWith(
-      'https://backend.example.com/api/f1/standings?season=2021&championship=drivers',
+      'https://backend.example.com/api/f1/standings?year=2021&championship=drivers',
       expect.objectContaining({ cache: 'no-store', method: 'GET' }),
     );
     expect(payload.season).toBe(2021);
@@ -47,7 +47,7 @@ describe('GET /api/f1/standings', () => {
     vi.stubGlobal('fetch', fetchMock);
 
     const request = new NextRequest(
-      'http://localhost:3000/api/f1/standings?season=2021&championship=team',
+      'http://localhost:3000/api/f1/standings?year=2021&championship=team',
     );
 
     const response = await GET(request);

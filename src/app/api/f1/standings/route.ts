@@ -15,15 +15,23 @@ function parseChampionship(value: string | null) {
 }
 
 export async function GET(request: NextRequest) {
-  const season = parseIntegerQuery(request.nextUrl.searchParams.get('season'));
+  if (request.nextUrl.searchParams.has('season')) {
+    return errorJson({
+      code: 'invalid_query',
+      message: 'The season query parameter is not supported. Use year.',
+      status: 400,
+    });
+  }
+
+  const year = parseIntegerQuery(request.nextUrl.searchParams.get('year'));
   const championship = parseChampionship(
     request.nextUrl.searchParams.get('championship'),
   );
 
-  if (season === null) {
+  if (year === null) {
     return errorJson({
       code: 'invalid_query',
-      message: 'A valid integer season query parameter is required.',
+      message: 'A valid integer year query parameter is required.',
       status: 400,
     });
   }
@@ -48,7 +56,7 @@ export async function GET(request: NextRequest) {
     });
   }
 
-  upstreamUrl.searchParams.set('season', String(season));
+  upstreamUrl.searchParams.set('year', String(year));
   upstreamUrl.searchParams.set('championship', championship);
 
   try {
