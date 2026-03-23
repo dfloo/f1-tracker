@@ -77,3 +77,19 @@ export interface ConstructorsSeasonResponse {
   availableYears: number[];
   data: ConstructorsSeasonData;
 }
+
+export interface EventSeasonCard {
+  id: string | null;
+  round: number;
+  name: string;
+}
+
+export interface EventsSeasonData {
+  year: number;
+  events: EventSeasonCard[];
+}
+
+export interface EventsSeasonResponse {
+  availableYears: number[];
+  data: EventsSeasonData;
+}

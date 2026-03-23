@@ -19,15 +19,15 @@ function parseSessionType(value: string | null) {
 }
 
 export async function GET(request: NextRequest) {
-  const season = parseIntegerQuery(request.nextUrl.searchParams.get('season'));
+  const year = parseIntegerQuery(request.nextUrl.searchParams.get('year'));
   const sessionType = parseSessionType(
     request.nextUrl.searchParams.get('sessionType'),
   );
 
-  if (season === null) {
+  if (year === null) {
     return errorJson({
       code: 'invalid_query',
-      message: 'A valid integer season query parameter is required.',
+      message: 'A valid integer year query parameter is required.',
       status: 400,
     });
   }
@@ -52,7 +52,7 @@ export async function GET(request: NextRequest) {
     });
   }
 
-  upstreamUrl.searchParams.set('season', String(season));
+  upstreamUrl.searchParams.set('year', String(year));
   upstreamUrl.searchParams.set('sessionType', sessionType);
 
   try {

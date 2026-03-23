@@ -6,6 +6,7 @@ import {
   fetchChampionshipByYear,
   fetchConstructorsByYear,
   fetchDriversByYear,
+  fetchEventsByYear,
 } from './f1DataClient';
 
 describe('f1DataClient cache', () => {
@@ -77,6 +78,13 @@ describe('f1DataClient cache', () => {
         drivers: [],
       },
     };
+    const eventsPayload = {
+      availableYears: [2024],
+      data: {
+        year: 2024,
+        events: [],
+      },
+    };
 
     const fetchMock = vi
       .fn()
@@ -91,6 +99,10 @@ describe('f1DataClient cache', () => {
       .mockResolvedValueOnce({
         ok: true,
         json: async () => championshipPayload,
+      })
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => eventsPayload,
       });
 
     vi.stubGlobal('fetch', fetchMock);
@@ -107,8 +119,12 @@ describe('f1DataClient cache', () => {
       year: 2024,
       signal: new AbortController().signal,
     });
+    await fetchEventsByYear({
+      year: 2024,
+      signal: new AbortController().signal,
+    });
 
-    expect(fetchMock).toHaveBeenCalledTimes(3);
+    expect(fetchMock).toHaveBeenCalledTimes(4);
     expect(fetchMock).toHaveBeenNthCalledWith(
       1,
       '/api/f1/drivers?year=2024',
@@ -122,6 +138,51 @@ describe('f1DataClient cache', () => {
     expect(fetchMock).toHaveBeenNthCalledWith(
       3,
       '/api/f1/championships?year=2024',
+      expect.objectContaining({ cache: 'no-store', method: 'GET' }),
+    );
+    expect(fetchMock).toHaveBeenNthCalledWith(
+      4,
+      '/api/f1/events?year=2024',
+      expect.objectContaining({ cache: 'no-store', method: 'GET' }),
+    );
+  });
+
+  it('requests events endpoint with year query and caches by year', async () => {
+    const payload = {
+      availableYears: [2024],
+      data: {
+        year: 2024,
+        events: [
+          {
+            id: 'bahrain-2024',
+            round: 1,
+            name: 'Bahrain Grand Prix',
+          },
+        ],
+      },
+    };
+
+    const fetchMock = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => payload,
+    });
+
+    vi.stubGlobal('fetch', fetchMock);
+
+    const first = await fetchEventsByYear({
+      year: 2024,
+      signal: new AbortController().signal,
+    });
+    const second = await fetchEventsByYear({
+      year: 2024,
+      signal: new AbortController().signal,
+    });
+
+    expect(first).toEqual(payload);
+    expect(second).toEqual(payload);
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    expect(fetchMock).toHaveBeenCalledWith(
+      '/api/f1/events?year=2024',
       expect.objectContaining({ cache: 'no-store', method: 'GET' }),
     );
   });

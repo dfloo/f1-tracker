@@ -3,19 +3,17 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { GET } from './route';
 
-describe('GET /api/f1/drivers', () => {
+describe('GET /api/f1/results', () => {
   beforeEach(() => {
     vi.restoreAllMocks();
     vi.stubEnv('API_SERVER_URL', 'https://backend.example.com');
   });
 
-  it('proxies season response when year is provided', async () => {
+  it('proxies results response for a valid year request', async () => {
     const upstreamPayload = {
-      availableYears: [2024, 2023],
-      data: {
-        year: 2024,
-        drivers: [],
-      },
+      year: 2024,
+      sessionType: 'race',
+      results: [],
     };
     const fetchMock = vi.fn().mockResolvedValue({
       ok: true,
@@ -28,7 +26,7 @@ describe('GET /api/f1/drivers', () => {
     vi.stubGlobal('fetch', fetchMock);
 
     const request = new NextRequest(
-      'http://localhost:3000/api/f1/drivers?year=2024',
+      'http://localhost:3000/api/f1/results?year=2024&sessionType=race',
     );
 
     const response = await GET(request);
@@ -36,46 +34,18 @@ describe('GET /api/f1/drivers', () => {
 
     expect(response.status).toBe(200);
     expect(fetchMock).toHaveBeenCalledWith(
-      'https://backend.example.com/api/f1/drivers?year=2024',
+      'https://backend.example.com/api/f1/results?year=2024&sessionType=race',
       expect.objectContaining({ cache: 'no-store', method: 'GET' }),
     );
-    expect(payload.data.year).toBe(2024);
+    expect(payload.year).toBe(2024);
   });
 
-  it('proxies directory response when no year is provided', async () => {
-    const upstreamPayload = {
-      years: [2024, 2023],
-      drivers: [],
-    };
-    const fetchMock = vi.fn().mockResolvedValue({
-      ok: true,
-      status: 200,
-      text: async () => JSON.stringify(upstreamPayload),
-      headers: new Headers({
-        'content-type': 'application/json',
-      }),
-    });
-    vi.stubGlobal('fetch', fetchMock);
-
-    const request = new NextRequest('http://localhost:3000/api/f1/drivers');
-
-    const response = await GET(request);
-    const payload = await response.json();
-
-    expect(response.status).toBe(200);
-    expect(fetchMock).toHaveBeenCalledWith(
-      'https://backend.example.com/api/f1/drivers',
-      expect.objectContaining({ cache: 'no-store', method: 'GET' }),
-    );
-    expect(payload.years).toEqual([2024, 2023]);
-  });
-
-  it('returns 400 for invalid year values', async () => {
+  it('returns 400 when year query is missing', async () => {
     const fetchMock = vi.fn();
     vi.stubGlobal('fetch', fetchMock);
 
     const request = new NextRequest(
-      'http://localhost:3000/api/f1/drivers?year=bad-year',
+      'http://localhost:3000/api/f1/results?sessionType=all',
     );
 
     const response = await GET(request);
@@ -86,11 +56,29 @@ describe('GET /api/f1/drivers', () => {
     expect(fetchMock).not.toHaveBeenCalled();
   });
 
-  it('returns 400 for empty year values', async () => {
+  it('returns 400 for invalid year values', async () => {
     const fetchMock = vi.fn();
     vi.stubGlobal('fetch', fetchMock);
 
-    const request = new NextRequest('http://localhost:3000/api/f1/drivers?year=');
+    const request = new NextRequest(
+      'http://localhost:3000/api/f1/results?year=bad-year&sessionType=all',
+    );
+
+    const response = await GET(request);
+    const payload = await response.json();
+
+    expect(response.status).toBe(400);
+    expect(payload.error.code).toBe('invalid_query');
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  it('returns 400 for invalid sessionType values', async () => {
+    const fetchMock = vi.fn();
+    vi.stubGlobal('fetch', fetchMock);
+
+    const request = new NextRequest(
+      'http://localhost:3000/api/f1/results?year=2024&sessionType=qualifying',
+    );
 
     const response = await GET(request);
     const payload = await response.json();
@@ -104,7 +92,7 @@ describe('GET /api/f1/drivers', () => {
     vi.stubGlobal('fetch', vi.fn().mockRejectedValue(new Error('network down')));
 
     const request = new NextRequest(
-      'http://localhost:3000/api/f1/drivers?year=2024',
+      'http://localhost:3000/api/f1/results?year=2024&sessionType=sprint',
     );
 
     const response = await GET(request);

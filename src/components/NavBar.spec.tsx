@@ -61,9 +61,9 @@ describe('NavBar', () => {
       'href',
       '/constructors',
     );
-    expect(screen.getByRole('link', { name: 'Races' })).toHaveAttribute(
+    expect(screen.getByRole('link', { name: 'Events' })).toHaveAttribute(
       'href',
-      '/races',
+      '/events',
     );
     expect(screen.getByRole('link', { name: 'Championships' })).toHaveAttribute(
       'href',
@@ -96,7 +96,7 @@ describe('NavBar', () => {
     render(<NavBar />);
 
     const activeLink = screen.getByRole('link', { name: 'Drivers' });
-    const inactiveLink = screen.getByRole('link', { name: 'Races' });
+    const inactiveLink = screen.getByRole('link', { name: 'Events' });
 
     expect(activeLink).toHaveStyle({
       color: 'var(--f1-red)',

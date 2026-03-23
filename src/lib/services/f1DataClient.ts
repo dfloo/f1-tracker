@@ -2,6 +2,7 @@ import type {
   ChampionshipYearResponse,
   ConstructorsSeasonResponse,
   DriversSeasonResponse,
+  EventsSeasonResponse,
 } from '@/types/championship';
 
 type ApiErrorPayload = {
@@ -50,9 +51,14 @@ export function clearF1DataClientCache() {
   responseCache.clear();
 }
 
-function buildRelativeApiUrl(pathname: string, year: number) {
-  const searchParams = new URLSearchParams({ year: String(year) });
-  return `${pathname}?${searchParams.toString()}`;
+function buildRelativeApiUrl(params: {
+  pathname: string;
+  year: number;
+}) {
+  const searchParams = new URLSearchParams({
+    year: String(params.year),
+  });
+  return `${params.pathname}?${searchParams.toString()}`;
 }
 
 async function fetchFromApi<T>(params: {
@@ -72,11 +78,17 @@ async function fetchFromApi<T>(params: {
     return cachedValue;
   }
 
-  const response = await fetch(buildRelativeApiUrl(params.pathname, params.year), {
-    method: 'GET',
-    signal: params.signal,
-    cache: 'no-store',
-  });
+  const response = await fetch(
+    buildRelativeApiUrl({
+      pathname: params.pathname,
+      year: params.year,
+    }),
+    {
+      method: 'GET',
+      signal: params.signal,
+      cache: 'no-store',
+    },
+  );
 
   if (!response.ok) {
     let payload: ApiErrorPayload | null = null;
@@ -130,5 +142,17 @@ export function fetchConstructorsByYear(params: {
     year: params.year,
     signal: params.signal,
     fallbackMessage: 'Failed to load constructors.',
+  });
+}
+
+export function fetchEventsByYear(params: {
+  year: number;
+  signal: AbortSignal;
+}) {
+  return fetchFromApi<EventsSeasonResponse>({
+    pathname: '/api/f1/events',
+    year: params.year,
+    signal: params.signal,
+    fallbackMessage: 'Failed to load events.',
   });
 }

@@ -16,10 +16,10 @@ const categories = [
     icon: '🔧',
   },
   {
-    title: 'Races',
+    title: 'Events',
     description:
       'Track race weekends with session schedules, circuit details, results, and key moments from every Grand Prix.',
-    href: '/races',
+    href: '/events',
     icon: '🏁',
   },
   {
@@ -47,7 +47,7 @@ export default function Home() {
             F1 <span style={{ color: 'var(--f1-red)' }}>Tracker</span>
           </h1>
           <p className="text-muted mx-auto mt-4 max-w-xl text-lg leading-relaxed">
-            Your hub for Formula 1 data — drivers, constructors, races, and
+            Your hub for Formula 1 data — drivers, constructors, events, and
             championship standings all in one place.
           </p>
         </div>
