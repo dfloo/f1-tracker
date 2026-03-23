@@ -5,6 +5,7 @@ import {
   CLIENT_CACHE_TTL_MS,
   fetchChampionshipByYear,
   fetchConstructorsByYear,
+  fetchDriverDetail,
   fetchDriversByYear,
   fetchEventsByYear,
 } from './f1DataClient';
@@ -263,5 +264,84 @@ describe('f1DataClient cache', () => {
         signal: new AbortController().signal,
       }),
     ).rejects.toThrow('Backend validation failed.');
+  });
+
+  it('uses separate cache entries for different raceId values on driver detail requests', async () => {
+    const firstPayload = {
+      availableYears: [2024],
+      data: {
+        year: 2024,
+        driver: {
+          id: '1',
+          name: 'Max Verstappen',
+          number: '1',
+          constructorName: 'Red Bull',
+          currentPoints: 50,
+        },
+        races: [],
+        selectedRace: {
+          id: 'bahrain',
+          round: 1,
+          name: 'Bahrain Grand Prix',
+          racePoints: 25,
+          cumulativePoints: 25,
+          qualifying: null,
+          lapTimes: [],
+        },
+        seasonPoints: [],
+      },
+    };
+    const secondPayload = {
+      ...firstPayload,
+      data: {
+        ...firstPayload.data,
+        selectedRace: {
+          ...firstPayload.data.selectedRace,
+          id: 'jeddah',
+          round: 2,
+          name: 'Saudi Arabian Grand Prix',
+        },
+      },
+    };
+
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => firstPayload,
+      })
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => secondPayload,
+      });
+
+    vi.stubGlobal('fetch', fetchMock);
+
+    const first = await fetchDriverDetail({
+      driverId: '1',
+      year: 2024,
+      raceId: 'bahrain',
+      signal: new AbortController().signal,
+    });
+    const second = await fetchDriverDetail({
+      driverId: '1',
+      year: 2024,
+      raceId: 'jeddah',
+      signal: new AbortController().signal,
+    });
+
+    expect(first.data.selectedRace?.id).toBe('bahrain');
+    expect(second.data.selectedRace?.id).toBe('jeddah');
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+    expect(fetchMock).toHaveBeenNthCalledWith(
+      1,
+      '/api/f1/drivers/1?year=2024&raceId=bahrain',
+      expect.objectContaining({ cache: 'no-store', method: 'GET' }),
+    );
+    expect(fetchMock).toHaveBeenNthCalledWith(
+      2,
+      '/api/f1/drivers/1?year=2024&raceId=jeddah',
+      expect.objectContaining({ cache: 'no-store', method: 'GET' }),
+    );
   });
 });
