@@ -26,7 +26,7 @@ const yearPayload = {
   availableYears: [2024, 2023, 2022],
   data: {
     year: 2024,
-    races: [
+    events: [
       { round: 1, name: 'Bahrain GP' },
       { round: 2, name: 'Saudi Arabian GP' },
     ],

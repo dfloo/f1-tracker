@@ -15,7 +15,7 @@ export function toDriversProgress(data: ChampionshipYearData): ChampionshipProgr
   return {
     year: data.year,
     category: 'drivers',
-    races: data.races,
+    events: data.events,
     series,
   };
 }
@@ -23,7 +23,7 @@ export function toDriversProgress(data: ChampionshipYearData): ChampionshipProgr
 export function toConstructorsProgress(
   data: ChampionshipYearData,
 ): ChampionshipProgress {
-  const rounds = data.races.length;
+  const rounds = data.events.length;
   const constructorMap = new Map<
     string,
     { id: string; name: string; color: string; points: number[]; total: number }
@@ -73,7 +73,7 @@ export function toConstructorsProgress(
   return {
     year: data.year,
     category: 'constructors',
-    races: data.races,
+    events: data.events,
     series,
   };
 }

@@ -92,9 +92,9 @@ function CustomLegend({
 }
 
 function toChartData(progress: ChampionshipProgress): ChartRow[] {
-  return progress.races.map((race, index) => {
+  return progress.events.map((event, index) => {
     const row: ChartRow = {
-      round: `R${race.round}`,
+      round: `R${event.round}`,
     };
 
     for (const competitor of progress.series) {
@@ -106,7 +106,7 @@ function toChartData(progress: ChampionshipProgress): ChartRow[] {
 }
 
 function getSortedSeries(series: ChampionshipSeries[]): ChampionshipSeries[] {
-  // Sort by final race points (last element) in descending order
+  // Sort by final event points (last element) in descending order
   return [...series].sort((a, b) => {
     const aFinalPoints = a.points[a.points.length - 1] ?? 0;
     const bFinalPoints = b.points[b.points.length - 1] ?? 0;
