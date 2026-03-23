@@ -5,11 +5,19 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import NavBar from './NavBar';
 
 const mockUsePathname = vi.fn();
+const mockUseSearchParams = vi.fn();
 const mockUseTheme = vi.fn();
 const mockSetTheme = vi.fn();
+const mockPush = vi.fn();
+const mockReplace = vi.fn();
 
 vi.mock('next/navigation', () => ({
   usePathname: () => mockUsePathname(),
+  useSearchParams: () => mockUseSearchParams(),
+  useRouter: () => ({
+    push: mockPush,
+    replace: mockReplace,
+  }),
 }));
 
 vi.mock('next-themes', () => ({
@@ -34,10 +42,14 @@ vi.mock('next/link', () => ({
 describe('NavBar', () => {
   beforeEach(() => {
     mockUsePathname.mockReset();
+    mockUseSearchParams.mockReset();
     mockUseTheme.mockReset();
     mockSetTheme.mockReset();
+    mockPush.mockReset();
+    mockReplace.mockReset();
 
     mockUsePathname.mockReturnValue('/');
+    mockUseSearchParams.mockReturnValue(new URLSearchParams('year=2024'));
     mockUseTheme.mockReturnValue({
       theme: 'system',
       setTheme: mockSetTheme,
@@ -51,24 +63,31 @@ describe('NavBar', () => {
       screen.getByRole('link', {
         name: /f1 tracker/i,
       }),
-    ).toHaveAttribute('href', '/');
+    ).toHaveAttribute('href', '/?year=2024');
 
     expect(screen.getByRole('link', { name: 'Drivers' })).toHaveAttribute(
       'href',
-      '/drivers',
+      '/drivers?year=2024',
     );
     expect(screen.getByRole('link', { name: 'Constructors' })).toHaveAttribute(
       'href',
-      '/constructors',
+      '/constructors?year=2024',
     );
     expect(screen.getByRole('link', { name: 'Events' })).toHaveAttribute(
       'href',
-      '/events',
+      '/events?year=2024',
     );
     expect(screen.getByRole('link', { name: 'Championships' })).toHaveAttribute(
       'href',
-      '/championships',
+      '/championships?year=2024',
     );
+  });
+
+  it('renders the season selector from the year query', () => {
+    render(<NavBar />);
+
+    expect(screen.getByLabelText(/season/i)).toHaveValue('2024');
+    expect(mockReplace).not.toHaveBeenCalled();
   });
 
   it('marks a link as active when pathname matches exactly', () => {
@@ -159,5 +178,38 @@ describe('NavBar', () => {
     expect(
       screen.queryByRole('dialog', { name: /theme settings/i }),
     ).not.toBeInTheDocument();
+  });
+
+  it('normalizes a missing year query param to the latest available year', () => {
+    mockUsePathname.mockReturnValue('/drivers');
+    mockUseSearchParams.mockReturnValue(new URLSearchParams());
+
+    render(<NavBar />);
+
+    expect(mockReplace).toHaveBeenCalledWith('/drivers?year=2024');
+  });
+
+  it('keeps the current list route when changing year', async () => {
+    const user = userEvent.setup();
+    mockUsePathname.mockReturnValue('/events');
+    mockUseSearchParams.mockReturnValue(new URLSearchParams('year=2024'));
+
+    render(<NavBar />);
+
+    await user.selectOptions(screen.getByLabelText(/season/i), '2023');
+
+    expect(mockPush).toHaveBeenCalledWith('/events?year=2023');
+  });
+
+  it('redirects from detail routes to list route when changing year', async () => {
+    const user = userEvent.setup();
+    mockUsePathname.mockReturnValue('/drivers/max-verstappen');
+    mockUseSearchParams.mockReturnValue(new URLSearchParams('year=2024'));
+
+    render(<NavBar />);
+
+    await user.selectOptions(screen.getByLabelText(/season/i), '2023');
+
+    expect(mockPush).toHaveBeenCalledWith('/drivers?year=2023');
   });
 });

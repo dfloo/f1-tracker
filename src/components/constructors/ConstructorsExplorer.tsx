@@ -1,36 +1,29 @@
 'use client';
 
-import YearSelect from '@/components/championships/YearSelect';
 import { useConstructorsSeason } from '@/hooks/useConstructorsSeason';
 
 import ConstructorCard from './ConstructorCard';
 
-export default function ConstructorsExplorer() {
-  const {
-    selectedYear,
-    setSelectedYear,
-    availableYears,
-    payload,
-    isLoading,
-    errorMessage,
-  } = useConstructorsSeason();
+interface ConstructorsExplorerProps {
+  selectedYear: number;
+}
+
+export default function ConstructorsExplorer({
+  selectedYear,
+}: ConstructorsExplorerProps) {
+  const { payload, isLoading, errorMessage } =
+    useConstructorsSeason(selectedYear);
 
   return (
     <div className="w-full min-w-0 pb-6">
-      <div className="bg-background sticky top-0 z-10 flex flex-col gap-4 py-6 sm:flex-row sm:items-end sm:justify-between">
-        <YearSelect
-          years={availableYears}
-          selectedYear={selectedYear}
-          onChange={setSelectedYear}
-          disabled={isLoading}
-        />
-        {payload ? (
+      {payload ? (
+        <div className="bg-background sticky top-0 z-10 py-6">
           <p className="text-muted text-sm">
             {payload.data.constructors.length} constructors in{' '}
             {payload.data.year}
           </p>
-        ) : null}
-      </div>
+        </div>
+      ) : null}
 
       <div className="flex min-w-0 flex-col gap-6">
         {isLoading ? (
@@ -58,7 +51,11 @@ export default function ConstructorsExplorer() {
             className="grid w-full min-w-0 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5"
           >
             {payload.data.constructors.map((constructor) => (
-              <ConstructorCard key={constructor.id} constructor={constructor} />
+              <ConstructorCard
+                key={constructor.id}
+                constructor={constructor}
+                selectedYear={selectedYear}
+              />
             ))}
           </div>
         ) : null}

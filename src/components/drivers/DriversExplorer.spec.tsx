@@ -1,5 +1,4 @@
 import { render, screen, waitFor, within } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { clearF1DataClientCache } from '@/lib/services/f1DataClient';
@@ -49,7 +48,7 @@ describe('DriversExplorer', () => {
 
     vi.stubGlobal('fetch', fetchMock);
 
-    render(<DriversExplorer />);
+    render(<DriversExplorer selectedYear={2024} />);
 
     await waitFor(() => {
       expect(fetchMock).toHaveBeenCalledWith(
@@ -74,7 +73,6 @@ describe('DriversExplorer', () => {
   });
 
   it('refetches when the season changes', async () => {
-    const user = userEvent.setup();
     const fetchMock = vi
       .fn()
       .mockResolvedValueOnce({
@@ -100,13 +98,13 @@ describe('DriversExplorer', () => {
 
     vi.stubGlobal('fetch', fetchMock);
 
-    render(<DriversExplorer />);
+    const { rerender } = render(<DriversExplorer selectedYear={2024} />);
 
     expect(
       await screen.findByRole('heading', { name: /max verstappen/i }),
     ).toBeInTheDocument();
 
-    await user.selectOptions(screen.getByLabelText(/season/i), '2023');
+    rerender(<DriversExplorer selectedYear={2023} />);
 
     expect(
       await screen.findByRole('heading', { name: /fernando alonso/i }),
@@ -125,7 +123,7 @@ describe('DriversExplorer', () => {
 
     vi.stubGlobal('fetch', fetchMock);
 
-    render(<DriversExplorer />);
+    render(<DriversExplorer selectedYear={2024} />);
 
     expect(await screen.findByRole('alert')).toHaveTextContent(
       /unsupported driver season/i,

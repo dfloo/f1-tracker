@@ -1,35 +1,27 @@
 'use client';
 
-import YearSelect from '@/components/championships/YearSelect';
 import { useDriversSeason } from '@/hooks/useDriversSeason';
 
 import DriverCard from './DriverCard';
 
-export default function DriversExplorer() {
-  const {
-    selectedYear,
-    setSelectedYear,
-    availableYears,
-    payload,
-    isLoading,
-    errorMessage,
-  } = useDriversSeason();
+interface DriversExplorerProps {
+  selectedYear: number;
+}
+
+export default function DriversExplorer({
+  selectedYear,
+}: DriversExplorerProps) {
+  const { payload, isLoading, errorMessage } = useDriversSeason(selectedYear);
 
   return (
     <div className="w-full min-w-0 pb-6">
-      <div className="bg-background sticky top-0 z-10 flex flex-col gap-4 py-6 sm:flex-row sm:items-end sm:justify-between">
-        <YearSelect
-          years={availableYears}
-          selectedYear={selectedYear}
-          onChange={setSelectedYear}
-          disabled={isLoading}
-        />
-        {payload ? (
+      {payload ? (
+        <div className="bg-background sticky top-0 z-10 py-6">
           <p className="text-muted text-sm">
             {payload.data.drivers.length} drivers in {payload.data.year}
           </p>
-        ) : null}
-      </div>
+        </div>
+      ) : null}
 
       <div className="flex min-w-0 flex-col gap-6">
         {isLoading ? (
@@ -57,7 +49,11 @@ export default function DriversExplorer() {
             className="grid w-full min-w-0 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5"
           >
             {payload.data.drivers.map((driver) => (
-              <DriverCard key={driver.id} driver={driver} />
+              <DriverCard
+                key={driver.id}
+                driver={driver}
+                selectedYear={selectedYear}
+              />
             ))}
           </div>
         ) : null}

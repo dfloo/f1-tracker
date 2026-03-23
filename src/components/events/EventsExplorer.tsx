@@ -1,19 +1,15 @@
 'use client';
 
-import YearSelect from '@/components/championships/YearSelect';
 import { useEventsSeason } from '@/hooks/useEventsSeason';
 
 import EventCard from './EventCard';
 
-export default function EventsExplorer() {
-  const {
-    selectedYear,
-    setSelectedYear,
-    availableYears,
-    payload,
-    isLoading,
-    errorMessage,
-  } = useEventsSeason();
+interface EventsExplorerProps {
+  selectedYear: number;
+}
+
+export default function EventsExplorer({ selectedYear }: EventsExplorerProps) {
+  const { payload, isLoading, errorMessage } = useEventsSeason(selectedYear);
 
   const events = payload
     ? [...payload.data.events].sort((a, b) => a.round - b.round)
@@ -21,19 +17,13 @@ export default function EventsExplorer() {
 
   return (
     <div className="w-full min-w-0 pb-6">
-      <div className="bg-background sticky top-0 z-10 flex flex-col gap-4 py-6 sm:flex-row sm:items-end sm:justify-between">
-        <YearSelect
-          years={availableYears}
-          selectedYear={selectedYear}
-          onChange={setSelectedYear}
-          disabled={isLoading}
-        />
-        {payload ? (
+      {payload ? (
+        <div className="bg-background sticky top-0 z-10 py-6">
           <p className="text-muted text-sm">
             {payload.data.events.length} events in {payload.data.year}
           </p>
-        ) : null}
-      </div>
+        </div>
+      ) : null}
 
       <div className="flex min-w-0 flex-col gap-6">
         {isLoading ? (
@@ -61,7 +51,11 @@ export default function EventsExplorer() {
             className="grid w-full min-w-0 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5"
           >
             {events.map((event) => (
-              <EventCard key={`${event.round}-${event.name}`} event={event} />
+              <EventCard
+                key={`${event.round}-${event.name}`}
+                event={event}
+                selectedYear={selectedYear}
+              />
             ))}
           </div>
         ) : null}

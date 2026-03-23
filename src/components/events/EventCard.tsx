@@ -6,9 +6,10 @@ import type { EventSeasonCard } from '@/types/championship';
 
 interface EventCardProps {
   event: EventSeasonCard;
+  selectedYear: number;
 }
 
-export default function EventCard({ event }: EventCardProps) {
+export default function EventCard({ event, selectedYear }: EventCardProps) {
   const className =
     'group border-border bg-surface flex h-full flex-col gap-4 rounded-xl border p-5 transition-colors';
 
@@ -32,7 +33,7 @@ export default function EventCard({ event }: EventCardProps) {
   if (event.id !== null) {
     return (
       <Link
-        href={`/events/${event.id}`}
+        href={`/events/${event.id}?year=${selectedYear}`}
         className={`${className} hover:bg-surface-hover hover:border-[var(--f1-red)]`}
       >
         {body}

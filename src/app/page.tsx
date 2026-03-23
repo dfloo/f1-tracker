@@ -1,4 +1,5 @@
 import CategoryCard from '@/components/CategoryCard';
+import { resolveYearQuery } from '@/lib/year';
 
 const categories = [
   {
@@ -31,7 +32,20 @@ const categories = [
   },
 ];
 
-export default function Home() {
+interface HomePageProps {
+  searchParams: Promise<{
+    year?: string | string[];
+  }>;
+}
+
+export default async function Home({ searchParams }: HomePageProps) {
+  const resolvedSearchParams = await searchParams;
+  const selectedYear = resolveYearQuery(resolvedSearchParams.year);
+
+  function hrefWithYear(href: string) {
+    return `${href}?year=${selectedYear}`;
+  }
+
   return (
     <div className="flex flex-1 flex-col items-center justify-center px-6">
       <div className="w-full max-w-5xl">
@@ -54,7 +68,11 @@ export default function Home() {
 
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {categories.map((cat) => (
-            <CategoryCard key={cat.href} {...cat} />
+            <CategoryCard
+              key={cat.href}
+              {...cat}
+              href={hrefWithYear(cat.href)}
+            />
           ))}
         </div>
       </div>

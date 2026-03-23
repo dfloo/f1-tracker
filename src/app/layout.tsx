@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
+import { Suspense } from 'react';
 import NavBar from '@/components/NavBar';
 import ThemeProvider from '@/contexts/ThemeProvider';
 import './globals.css';
@@ -32,7 +33,15 @@ export default function RootLayout({
     >
       <body className="bg-background text-foreground flex h-full flex-col overflow-hidden">
         <ThemeProvider>
-          <NavBar />
+          <Suspense
+            fallback={
+              <header className="border-border bg-surface sticky top-0 z-50 border-b">
+                <div className="mx-auto flex h-[72px] max-w-7xl items-center px-6 py-4" />
+              </header>
+            }
+          >
+            <NavBar />
+          </Suspense>
           <main className="flex min-h-0 flex-1 flex-col overflow-hidden">
             {children}
           </main>
