@@ -77,3 +77,19 @@ export interface ConstructorsSeasonResponse {
   availableYears: number[];
   data: ConstructorsSeasonData;
 }
+
+export interface RaceSeasonCard {
+  id: string | null;
+  round: number;
+  name: string;
+}
+
+export interface RacesSeasonData {
+  year: number;
+  races: RaceSeasonCard[];
+}
+
+export interface RacesSeasonResponse {
+  availableYears: number[];
+  data: RacesSeasonData;
+}
