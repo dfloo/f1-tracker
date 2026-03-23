@@ -1,11 +1,11 @@
 'use client';
 
 import YearSelect from '@/components/championships/YearSelect';
-import { useRacesSeason } from '@/hooks/useRacesSeason';
+import { useEventsSeason } from '@/hooks/useEventsSeason';
 
-import GrandPrixCard from './GrandPrixCard';
+import EventCard from './EventCard';
 
-export default function RacesExplorer() {
+export default function EventsExplorer() {
   const {
     selectedYear,
     setSelectedYear,
@@ -13,10 +13,10 @@ export default function RacesExplorer() {
     payload,
     isLoading,
     errorMessage,
-  } = useRacesSeason();
+  } = useEventsSeason();
 
-  const races = payload
-    ? [...payload.data.races].sort((a, b) => a.round - b.round)
+  const events = payload
+    ? [...payload.data.events].sort((a, b) => a.round - b.round)
     : [];
 
   return (
@@ -30,7 +30,7 @@ export default function RacesExplorer() {
         />
         {payload ? (
           <p className="text-muted text-sm">
-            {payload.data.races.length} races in {payload.data.year}
+            {payload.data.events.length} events in {payload.data.year}
           </p>
         ) : null}
       </div>
@@ -38,7 +38,7 @@ export default function RacesExplorer() {
       <div className="flex min-w-0 flex-col gap-6">
         {isLoading ? (
           <div className="border-border bg-surface text-muted flex items-center justify-center rounded-xl border py-24 text-sm">
-            Loading races...
+            Loading events...
           </div>
         ) : null}
 
@@ -48,27 +48,27 @@ export default function RacesExplorer() {
             className="border-border bg-surface rounded-xl border px-4 py-5"
           >
             <p className="text-foreground text-sm font-semibold">
-              Unable to load races
+              Unable to load events
             </p>
             <p className="text-muted mt-1 text-sm">{errorMessage}</p>
           </div>
         ) : null}
 
-        {!isLoading && !errorMessage && payload && races.length > 0 ? (
+        {!isLoading && !errorMessage && payload && events.length > 0 ? (
           <div
             role="list"
-            aria-label={`Grand Prix races for ${payload.data.year}`}
+            aria-label={`Grand Prix events for ${payload.data.year}`}
             className="grid w-full min-w-0 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5"
           >
-            {races.map((race) => (
-              <GrandPrixCard key={`${race.round}-${race.name}`} race={race} />
+            {events.map((event) => (
+              <EventCard key={`${event.round}-${event.name}`} event={event} />
             ))}
           </div>
         ) : null}
 
-        {!isLoading && !errorMessage && payload && races.length === 0 ? (
+        {!isLoading && !errorMessage && payload && events.length === 0 ? (
           <div className="border-border bg-surface text-muted rounded-xl border px-4 py-5 text-sm">
-            No races available for {payload.data.year}.
+            No events available for {payload.data.year}.
           </div>
         ) : null}
       </div>

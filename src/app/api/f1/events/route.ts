@@ -7,14 +7,21 @@ import { errorJson, parseIntegerQuery } from '@/lib/server/http';
 export const dynamic = 'force-dynamic';
 
 export async function GET(request: NextRequest) {
-  const season = parseIntegerQuery(request.nextUrl.searchParams.get('season'));
+  const hasSeasonParam = request.nextUrl.searchParams.has('season');
+  const hasYearParam = request.nextUrl.searchParams.has('year');
+  const seasonParam = request.nextUrl.searchParams.get('season');
+  const yearParam = request.nextUrl.searchParams.get('year');
+  const queryValue = yearParam ?? seasonParam;
+  const parsedYear = parseIntegerQuery(queryValue);
 
-  if (season === null) {
-    return errorJson({
-      code: 'invalid_query',
-      message: 'A valid integer season query parameter is required.',
-      status: 400,
-    });
+  if (hasSeasonParam || hasYearParam) {
+    if (parsedYear === null) {
+      return errorJson({
+        code: 'invalid_query',
+        message: 'A valid integer year or season query parameter is required.',
+        status: 400,
+      });
+    }
   }
 
   let upstreamUrl: URL;
@@ -29,7 +36,9 @@ export async function GET(request: NextRequest) {
     });
   }
 
-  upstreamUrl.searchParams.set('season', String(season));
+  if (parsedYear !== null) {
+    upstreamUrl.searchParams.set('year', String(parsedYear));
+  }
 
   try {
     const upstreamResponse = await fetch(upstreamUrl.toString(), {

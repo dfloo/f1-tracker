@@ -9,7 +9,7 @@ import { useEffect, useRef, useState } from 'react';
 const navLinks = [
   { href: '/drivers', label: 'Drivers' },
   { href: '/constructors', label: 'Constructors' },
-  { href: '/races', label: 'Races' },
+  { href: '/events', label: 'Events' },
   { href: '/championships', label: 'Championships' },
 ];
 

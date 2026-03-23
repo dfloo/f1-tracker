@@ -6,7 +6,7 @@ import {
   fetchChampionshipByYear,
   fetchConstructorsByYear,
   fetchDriversByYear,
-  fetchRacesByYear,
+  fetchEventsByYear,
 } from './f1DataClient';
 
 describe('f1DataClient cache', () => {
@@ -78,11 +78,11 @@ describe('f1DataClient cache', () => {
         drivers: [],
       },
     };
-    const racesPayload = {
+    const eventsPayload = {
       availableYears: [2024],
       data: {
         year: 2024,
-        races: [],
+        events: [],
       },
     };
 
@@ -102,7 +102,7 @@ describe('f1DataClient cache', () => {
       })
       .mockResolvedValueOnce({
         ok: true,
-        json: async () => racesPayload,
+        json: async () => eventsPayload,
       });
 
     vi.stubGlobal('fetch', fetchMock);
@@ -119,7 +119,7 @@ describe('f1DataClient cache', () => {
       year: 2024,
       signal: new AbortController().signal,
     });
-    await fetchRacesByYear({
+    await fetchEventsByYear({
       year: 2024,
       signal: new AbortController().signal,
     });
@@ -142,17 +142,17 @@ describe('f1DataClient cache', () => {
     );
     expect(fetchMock).toHaveBeenNthCalledWith(
       4,
-      '/api/f1/events?season=2024',
+      '/api/f1/events?year=2024',
       expect.objectContaining({ cache: 'no-store', method: 'GET' }),
     );
   });
 
-  it('requests races endpoint with season query and caches by year', async () => {
+  it('requests events endpoint with year query and caches by year', async () => {
     const payload = {
       availableYears: [2024],
       data: {
         year: 2024,
-        races: [
+        events: [
           {
             id: 'bahrain-2024',
             round: 1,
@@ -169,11 +169,11 @@ describe('f1DataClient cache', () => {
 
     vi.stubGlobal('fetch', fetchMock);
 
-    const first = await fetchRacesByYear({
+    const first = await fetchEventsByYear({
       year: 2024,
       signal: new AbortController().signal,
     });
-    const second = await fetchRacesByYear({
+    const second = await fetchEventsByYear({
       year: 2024,
       signal: new AbortController().signal,
     });
@@ -182,7 +182,7 @@ describe('f1DataClient cache', () => {
     expect(second).toEqual(payload);
     expect(fetchMock).toHaveBeenCalledTimes(1);
     expect(fetchMock).toHaveBeenCalledWith(
-      '/api/f1/events?season=2024',
+      '/api/f1/events?year=2024',
       expect.objectContaining({ cache: 'no-store', method: 'GET' }),
     );
   });

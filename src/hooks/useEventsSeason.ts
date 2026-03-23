@@ -2,27 +2,27 @@
 
 import { useEffect, useState } from 'react';
 
-import { fetchRacesByYear } from '@/lib/services/f1DataClient';
-import type { RacesSeasonResponse } from '@/types/championship';
+import { fetchEventsByYear } from '@/lib/services/f1DataClient';
+import type { EventsSeasonResponse } from '@/types/championship';
 
 const defaultYears = [2024];
 
-export function useRacesSeason(defaultYear = 2024) {
+export function useEventsSeason(defaultYear = 2024) {
   const [selectedYear, setSelectedYear] = useState<number>(defaultYear);
   const [availableYears, setAvailableYears] = useState<number[]>(defaultYears);
-  const [payload, setPayload] = useState<RacesSeasonResponse | null>(null);
+  const [payload, setPayload] = useState<EventsSeasonResponse | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   useEffect(() => {
     const abortController = new AbortController();
 
-    async function loadRaces() {
+    async function loadEvents() {
       setIsLoading(true);
       setErrorMessage(null);
 
       try {
-        const nextPayload = await fetchRacesByYear({
+        const nextPayload = await fetchEventsByYear({
           year: selectedYear,
           signal: abortController.signal,
         });
@@ -34,7 +34,7 @@ export function useRacesSeason(defaultYear = 2024) {
           return;
         }
 
-        const fallbackMessage = 'Failed to load races.';
+        const fallbackMessage = 'Failed to load events.';
         setErrorMessage(
           error instanceof Error ? error.message : fallbackMessage,
         );
@@ -45,7 +45,7 @@ export function useRacesSeason(defaultYear = 2024) {
       }
     }
 
-    void loadRaces();
+    void loadEvents();
 
     return () => {
       abortController.abort();

@@ -4,13 +4,13 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { clearF1DataClientCache } from '@/lib/services/f1DataClient';
 
-import RacesExplorer from './RacesExplorer';
+import EventsExplorer from './EventsExplorer';
 
 const seasonPayload = {
   availableYears: [2024, 2023],
   data: {
     year: 2024,
-    races: [
+    events: [
       {
         id: null,
         round: 2,
@@ -30,13 +30,13 @@ const seasonPayload = {
   },
 };
 
-describe('RacesExplorer', () => {
+describe('EventsExplorer', () => {
   beforeEach(() => {
     vi.restoreAllMocks();
     clearF1DataClientCache();
   });
 
-  it('loads the selected season and renders one card per grand prix in round order', async () => {
+  it('loads the selected season and renders one card per grand prix event in round order', async () => {
     const fetchMock = vi.fn().mockResolvedValue({
       ok: true,
       json: async () => seasonPayload,
@@ -44,17 +44,17 @@ describe('RacesExplorer', () => {
 
     vi.stubGlobal('fetch', fetchMock);
 
-    render(<RacesExplorer />);
+    render(<EventsExplorer />);
 
     await waitFor(() => {
       expect(fetchMock).toHaveBeenCalledWith(
-        '/api/f1/events?season=2024',
+        '/api/f1/events?year=2024',
         expect.objectContaining({ cache: 'no-store', method: 'GET' }),
       );
     });
 
     const list = await screen.findByRole('list', {
-      name: /grand prix races for 2024/i,
+      name: /grand prix events for 2024/i,
     });
 
     const names = within(list)
@@ -69,7 +69,7 @@ describe('RacesExplorer', () => {
     expect(names).toHaveLength(3);
   });
 
-  it('renders links only for races with an id', async () => {
+  it('renders links only for events with an id', async () => {
     const fetchMock = vi.fn().mockResolvedValue({
       ok: true,
       json: async () => seasonPayload,
@@ -77,13 +77,13 @@ describe('RacesExplorer', () => {
 
     vi.stubGlobal('fetch', fetchMock);
 
-    render(<RacesExplorer />);
+    render(<EventsExplorer />);
 
-    const linkedRace = await screen.findByRole('link', {
+    const linkedEvent = await screen.findByRole('link', {
       name: /australian grand prix/i,
     });
 
-    expect(linkedRace).toHaveAttribute('href', '/races/aus-2024');
+    expect(linkedEvent).toHaveAttribute('href', '/events/aus-2024');
 
     const unlinkedHeading = screen.getByRole('heading', {
       name: /saudi arabian grand prix/i,
@@ -106,7 +106,7 @@ describe('RacesExplorer', () => {
           ...seasonPayload,
           data: {
             year: 2023,
-            races: [
+            events: [
               {
                 id: 'mon-2023',
                 round: 1,
@@ -119,7 +119,7 @@ describe('RacesExplorer', () => {
 
     vi.stubGlobal('fetch', fetchMock);
 
-    render(<RacesExplorer />);
+    render(<EventsExplorer />);
 
     expect(
       await screen.findByRole('heading', { name: /bahrain grand prix/i }),
@@ -131,7 +131,7 @@ describe('RacesExplorer', () => {
       await screen.findByRole('heading', { name: /monaco grand prix/i }),
     ).toBeInTheDocument();
     expect(fetchMock).toHaveBeenLastCalledWith(
-      '/api/f1/events?season=2023',
+      '/api/f1/events?year=2023',
       expect.objectContaining({ cache: 'no-store', method: 'GET' }),
     );
   });
@@ -139,15 +139,15 @@ describe('RacesExplorer', () => {
   it('shows an error state when the request fails', async () => {
     const fetchMock = vi.fn().mockResolvedValue({
       ok: false,
-      json: async () => ({ message: 'Unsupported race season.' }),
+      json: async () => ({ message: 'Unsupported event season.' }),
     });
 
     vi.stubGlobal('fetch', fetchMock);
 
-    render(<RacesExplorer />);
+    render(<EventsExplorer />);
 
     expect(await screen.findByRole('alert')).toHaveTextContent(
-      /unsupported race season/i,
+      /unsupported event season/i,
     );
   });
 });

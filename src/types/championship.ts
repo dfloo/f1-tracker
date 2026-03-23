@@ -78,18 +78,18 @@ export interface ConstructorsSeasonResponse {
   data: ConstructorsSeasonData;
 }
 
-export interface RaceSeasonCard {
+export interface EventSeasonCard {
   id: string | null;
   round: number;
   name: string;
 }
 
-export interface RacesSeasonData {
+export interface EventsSeasonData {
   year: number;
-  races: RaceSeasonCard[];
+  events: EventSeasonCard[];
 }
 
-export interface RacesSeasonResponse {
+export interface EventsSeasonResponse {
   availableYears: number[];
-  data: RacesSeasonData;
+  data: EventsSeasonData;
 }

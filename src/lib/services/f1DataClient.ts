@@ -2,7 +2,7 @@ import type {
   ChampionshipYearResponse,
   ConstructorsSeasonResponse,
   DriversSeasonResponse,
-  RacesSeasonResponse,
+  EventsSeasonResponse,
 } from '@/types/championship';
 
 type ApiErrorPayload = {
@@ -148,15 +148,14 @@ export function fetchConstructorsByYear(params: {
   });
 }
 
-export function fetchRacesByYear(params: {
+export function fetchEventsByYear(params: {
   year: number;
   signal: AbortSignal;
 }) {
-  return fetchFromApi<RacesSeasonResponse>({
+  return fetchFromApi<EventsSeasonResponse>({
     pathname: '/api/f1/events',
     year: params.year,
-    queryKey: 'season',
     signal: params.signal,
-    fallbackMessage: 'Failed to load races.',
+    fallbackMessage: 'Failed to load events.',
   });
 }
